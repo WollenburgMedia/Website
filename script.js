@@ -1,7 +1,7 @@
 /* ======================================================
-   WFILMS — Advanced Animations & Interactions Engine
-   Custom Cursor, Split Text, 3D Tilt, Horizontal Scroll,
-   Particles, Magnetic Hover, Parallax, ScrollTrigger
+   WOLLENBURG MEDIA — Animation Engine v2.2
+   Particle Canvas, Parallax 3D Camera, Lenis Smooth Scroll,
+   GSAP ScrollTrigger, Crosshair Cursor
    ====================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -14,8 +14,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const backToTop = document.getElementById('back-to-top');
 
     /* ==========================================================
-       1. SPLIT TEXT ENGINE
-       Wraps each character in a <span class="char">
+       1. LENIS SMOOTH SCROLL
+       ========================================================== */
+    let lenis;
+    if (!isMobile) {
+        lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            orientation: 'vertical',
+            gestureOrientation: 'vertical',
+            smoothWheel: true,
+            wheelMultiplier: 1,
+            touchMultiplier: 2,
+        });
+
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+        gsap.ticker.lagSmoothing(0);
+    }
+
+    /* ==========================================================
+       2. SPLIT TEXT ENGINE
        ========================================================== */
     function splitTextIntoChars(element) {
         const text = element.textContent;
@@ -33,11 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
             span.style.setProperty('--i', i);
             element.appendChild(span);
         }
-
         return element.querySelectorAll('.char');
     }
 
-    // Split all elements with data-split-text
     const splitElements = document.querySelectorAll('[data-split-text]');
     const splitData = [];
     splitElements.forEach(el => {
@@ -46,8 +63,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* ==========================================================
-       2. PRELOADER — SVG Draw + Glitch + Bar + Wipe
+       3. PRELOADER — SVG Draw + Character Stagger + Glitch
        ========================================================== */
+    document.querySelectorAll('#preloader .logo-path').forEach(path => {
+        const len = path.getTotalLength ? path.getTotalLength() : 400;
+        path.style.strokeDasharray = len;
+        path.style.strokeDashoffset = len;
+    });
+
     const preloaderTl = gsap.timeline({
         onComplete() {
             gsap.to(preloader, {
@@ -62,35 +85,53 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Animate SVG paths drawing on
-    document.querySelectorAll('#preloader .logo-path').forEach(path => {
-        const len = path.getTotalLength ? path.getTotalLength() : 400;
-        path.style.strokeDasharray = len;
-        path.style.strokeDashoffset = len;
-    });
-
     preloaderTl
+        // Draw the SVG logo
         .to('#preloader .logo-path', {
             strokeDashoffset: 0,
-            duration: 1.5,
-            stagger: 0.1,
+            duration: 1.2,
+            stagger: 0.08,
             ease: 'power2.inOut'
         })
-        .to('.preloader-text', {
+        // Then flash the logo briefly to accent color
+        .to('#preloader .logo-path', {
+            stroke: '#C41E3A',
+            duration: 0.15,
+            ease: 'none'
+        })
+        .to('#preloader .logo-path', {
+            stroke: '#ffffff',
+            duration: 0.15,
+            ease: 'none'
+        })
+        // Character stagger reveal — each letter drops in with 3D flip
+        .to('.preloader-text-char', {
+            opacity: 1,
+            y: '0%',
+            rotateX: 0,
+            duration: 0.5,
+            stagger: 0.04,
+            ease: 'back.out(1.7)'
+        }, '-=0.1')
+        // "MEDIA" subtitle scales in
+        .to('.preloader-sub', {
             opacity: 1,
             y: 0,
-            duration: 0.5,
+            scaleX: 1,
+            duration: 0.4,
             ease: 'power2.out'
-        }, '-=0.5')
+        }, '-=0.2')
+        // Bar
         .to('.preloader-bar', {
             opacity: 1,
-            duration: 0.3
-        }, '-=0.2')
+            duration: 0.2
+        }, '-=0.1')
         .to('.preloader-bar-fill', {
             width: '100%',
-            duration: 1,
+            duration: 0.8,
             ease: 'power1.inOut'
         })
+        // Fade out
         .to('.preloader-inner', {
             opacity: 0,
             scale: 0.9,
@@ -99,283 +140,389 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
     /* ==========================================================
-       3. PAGE ANIMATIONS — Called after preloader
+       4. HERO PARTICLE CANVAS — Floating connected particles
+       ========================================================== */
+    function initHeroParticles() {
+        const canvas = document.getElementById('hero-particles');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        let w, h;
+        let particles = [];
+        const particleCount = isMobile ? 40 : 80;
+        const connectionDistance = isMobile ? 100 : 150;
+        let mouseParticle = { x: -1000, y: -1000 };
+
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        // Track mouse for interaction
+        if (!isMobile) {
+            document.getElementById('hero').addEventListener('mousemove', (e) => {
+                mouseParticle.x = e.clientX;
+                mouseParticle.y = e.clientY;
+            });
+        }
+
+        // Create particles
+        for (let i = 0; i < particleCount; i++) {
+            particles.push({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5,
+                size: Math.random() * 2 + 0.5,
+                opacity: Math.random() * 0.4 + 0.1
+            });
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, w, h);
+
+            // Update and draw particles
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+
+                // Move
+                p.x += p.vx;
+                p.y += p.vy;
+
+                // Wrap around edges
+                if (p.x < 0) p.x = w;
+                if (p.x > w) p.x = 0;
+                if (p.y < 0) p.y = h;
+                if (p.y > h) p.y = 0;
+
+                // Mouse repulsion
+                if (!isMobile) {
+                    const dx = p.x - mouseParticle.x;
+                    const dy = p.y - mouseParticle.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 120) {
+                        const force = (120 - dist) / 120;
+                        p.vx += (dx / dist) * force * 0.3;
+                        p.vy += (dy / dist) * force * 0.3;
+                    }
+                }
+
+                // Damping
+                p.vx *= 0.99;
+                p.vy *= 0.99;
+
+                // Draw particle
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(196, 30, 58, ${p.opacity})`;
+                ctx.fill();
+
+                // Draw connections
+                for (let j = i + 1; j < particles.length; j++) {
+                    const p2 = particles[j];
+                    const dx = p.x - p2.x;
+                    const dy = p.y - p2.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < connectionDistance) {
+                        const alpha = (1 - dist / connectionDistance) * 0.12;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.strokeStyle = `rgba(196, 30, 58, ${alpha})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+
+                // Mouse connections
+                if (!isMobile) {
+                    const mdx = p.x - mouseParticle.x;
+                    const mdy = p.y - mouseParticle.y;
+                    const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+                    if (mdist < 200) {
+                        const alpha = (1 - mdist / 200) * 0.2;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(mouseParticle.x, mouseParticle.y);
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+        animate();
+    }
+
+    initHeroParticles();
+
+    /* ==========================================================
+       5. HERO — 3D PARALLAX CAMERA (AE-style scroll depth)
+       ========================================================== */
+    function initHeroParallax() {
+        const layers = document.querySelectorAll('.hero-depth-layer');
+
+        layers.forEach(layer => {
+            const depth = parseFloat(layer.getAttribute('data-depth')) || 0.5;
+            const yAmount = depth * 300;
+            const scaleEnd = 1 + depth * 0.15;
+
+            gsap.to(layer, {
+                y: -yAmount,
+                scale: scaleEnd,
+                opacity: 0,
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: '#hero',
+                    start: 'top top',
+                    end: 'bottom top',
+                    scrub: true
+                }
+            });
+        });
+
+        // Hero content parallax
+        gsap.to('.hero-content', {
+            y: -120,
+            opacity: 0,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '#hero',
+                start: '15% top',
+                end: '85% top',
+                scrub: true
+            }
+        });
+
+        // Watermark parallax
+        gsap.to('.hero-watermark', {
+            y: -80,
+            scale: 0.85,
+            opacity: 0,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '#hero',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: true
+            }
+        });
+
+        // Scroll indicator fade
+        gsap.to('.scroll-indicator', {
+            opacity: 0,
+            y: -20,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '#hero',
+                start: '5% top',
+                end: '25% top',
+                scrub: true
+            }
+        });
+
+        // Mouse parallax for depth layers (desktop)
+        if (!isMobile) {
+            const heroSection = document.getElementById('hero');
+            let targetMX = 0, targetMY = 0;
+            let currentMX = 0, currentMY = 0;
+
+            heroSection.addEventListener('mousemove', (e) => {
+                targetMX = (e.clientX / window.innerWidth - 0.5) * 2;
+                targetMY = (e.clientY / window.innerHeight - 0.5) * 2;
+            });
+
+            function updateMouseParallax() {
+                currentMX += (targetMX - currentMX) * 0.05;
+                currentMY += (targetMY - currentMY) * 0.05;
+
+                layers.forEach(layer => {
+                    const depth = parseFloat(layer.getAttribute('data-depth')) || 0.5;
+                    const moveX = currentMX * depth * 25;
+                    const moveY = currentMY * depth * 15;
+                    layer.style.transform = `translate(${moveX}px, ${moveY}px)`;
+                });
+
+                requestAnimationFrame(updateMouseParallax);
+            }
+            updateMouseParallax();
+        }
+    }
+
+    /* ==========================================================
+       6. PAGE ANIMATIONS — After preloader
        ========================================================== */
     function initPageAnimations() {
+        // Hero label
+        gsap.to('.hero-label', {
+            opacity: 1, y: 0,
+            duration: 0.8, ease: 'power2.out', delay: 0.1
+        });
+
         // Hero title chars
         const heroTitleData = splitData.find(d => d.el.classList.contains('hero-title'));
         if (heroTitleData) {
             gsap.to(heroTitleData.chars, {
-                opacity: 1,
-                y: 0,
-                rotateX: 0,
-                duration: 1,
-                stagger: 0.05,
-                ease: 'power3.out',
-                delay: 0.1
+                opacity: 1, y: 0, rotateX: 0,
+                duration: 1.2, stagger: 0.06,
+                ease: 'power3.out', delay: 0.2
             });
         }
 
-        // Hero subtitle
-        const heroSubData = splitData.find(d => d.el.classList.contains('hero-subtitle'));
-        if (heroSubData) {
-            gsap.to(heroSubData.chars, {
-                opacity: 1,
-                duration: 0.6,
-                stagger: 0.02,
-                ease: 'power2.out',
-                delay: 0.6
-            });
-        }
+        // "MEDIA" subtitle
+        gsap.to('.hero-title-sub', {
+            opacity: 1, y: 0,
+            duration: 0.6, ease: 'power2.out', delay: 0.8
+        });
 
         // Tagline
         gsap.to('.hero-tagline', {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            ease: 'power2.out',
-            delay: 1
+            opacity: 1, y: 0,
+            duration: 0.8, ease: 'power2.out', delay: 1.0
+        });
+
+        gsap.to('.tagline-word', {
+            opacity: 1, y: 0,
+            duration: 0.6, stagger: 0.1,
+            ease: 'power2.out', delay: 1.1
+        });
+
+        // Description
+        gsap.to('.hero-description', {
+            opacity: 1, y: 0,
+            duration: 0.7, ease: 'power2.out', delay: 1.3
         });
 
         // CTA
         gsap.to('.hero-cta', {
-            opacity: 1,
-            y: 0,
-            duration: 0.7,
-            ease: 'power2.out',
-            delay: 1.2
+            opacity: 1, y: 0,
+            duration: 0.7, ease: 'power2.out', delay: 1.5
         });
 
         // Scroll indicator
         gsap.to('.scroll-indicator', {
             opacity: 1,
-            duration: 0.6,
-            ease: 'power2.out',
-            delay: 1.5
+            duration: 0.6, ease: 'power2.out', delay: 1.8
         });
 
-        // Initialize all scroll-based animations
+        // Start scroll systems
+        initHeroParallax();
         initScrollAnimations();
     }
 
     /* ==========================================================
-       4. SCROLL-TRIGGERED ANIMATIONS
+       7. SCROLL-TRIGGERED ANIMATIONS
        ========================================================== */
     function initScrollAnimations() {
         // Section labels [data-reveal]
         document.querySelectorAll('[data-reveal]').forEach(el => {
+            if (el.closest('#hero')) return;
             gsap.to(el, {
-                opacity: 1,
-                y: 0,
-                duration: 0.8,
-                ease: 'power2.out',
-                scrollTrigger: {
-                    trigger: el,
-                    start: 'top 85%',
-                    toggleActions: 'play none none none'
-                }
+                opacity: 1, y: 0,
+                duration: 0.8, ease: 'power2.out',
+                scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
             });
         });
 
-        // Section title chars (not hero)
+        // Section title chars
         splitData.forEach(({ el, chars }) => {
-            if (el.classList.contains('hero-title') || el.classList.contains('hero-subtitle')) return;
-
+            if (el.classList.contains('hero-title')) return;
             gsap.to(chars, {
-                opacity: 1,
-                y: 0,
-                duration: 0.6,
-                stagger: 0.03,
-                ease: 'power2.out',
-                scrollTrigger: {
-                    trigger: el,
-                    start: 'top 85%',
-                    toggleActions: 'play none none none'
-                }
+                opacity: 1, y: 0, rotateX: 0,
+                duration: 0.7, stagger: 0.03, ease: 'power2.out',
+                scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
             });
         });
 
-        // Service cards stagger
-        gsap.from('.service-card', {
-            y: 80,
-            opacity: 0,
-            duration: 0.8,
-            stagger: 0.15,
-            ease: 'power3.out',
-            scrollTrigger: {
-                trigger: '.services-grid',
-                start: 'top 80%',
-                toggleActions: 'play none none none'
-            }
+        // Service cards
+        gsap.utils.toArray('.service-card').forEach((card, i) => {
+            gsap.to(card, {
+                y: 0, opacity: 1,
+                duration: 0.9, delay: i * 0.12, ease: 'power3.out',
+                scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none none' }
+            });
         });
 
-        // About paragraphs
+        // Portfolio items
+        gsap.utils.toArray('.portfolio-item').forEach(item => {
+            gsap.to(item, {
+                y: 0, opacity: 1,
+                duration: 1, ease: 'power3.out',
+                scrollTrigger: { trigger: item, start: 'top 88%', toggleActions: 'play none none none' }
+            });
+        });
+
+        // About text
         gsap.utils.toArray('.about-lead, .about-body').forEach(el => {
             gsap.to(el, {
-                opacity: 1,
-                y: 0,
-                duration: 0.8,
-                ease: 'power2.out',
-                scrollTrigger: {
-                    trigger: el,
-                    start: 'top 85%',
-                    toggleActions: 'play none none none'
-                }
+                opacity: 1, y: 0,
+                duration: 0.8, ease: 'power2.out',
+                scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
             });
         });
 
-        // Stat items
+        // Stats
         gsap.utils.toArray('.stat-item').forEach((el, i) => {
             gsap.to(el, {
-                opacity: 1,
-                x: 0,
-                duration: 0.7,
-                delay: i * 0.15,
-                ease: 'power2.out',
-                scrollTrigger: {
-                    trigger: el,
-                    start: 'top 85%',
-                    toggleActions: 'play none none none'
-                }
+                opacity: 1, x: 0,
+                duration: 0.8, delay: i * 0.15, ease: 'power2.out',
+                scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
             });
         });
 
         // Contact lead
         gsap.to('.contact-lead', {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            ease: 'power2.out',
-            scrollTrigger: {
-                trigger: '.contact-lead',
-                start: 'top 85%',
-                toggleActions: 'play none none none'
-            }
+            opacity: 1, y: 0,
+            duration: 0.8, ease: 'power2.out',
+            scrollTrigger: { trigger: '.contact-lead', start: 'top 85%', toggleActions: 'play none none none' }
         });
 
-        // Horizontal scroll portfolio
-        initHorizontalScroll();
-
-        // Counter animation
         initCounters();
     }
 
     /* ==========================================================
-       5. HORIZONTAL SCROLL PORTFOLIO
-       ========================================================== */
-    function initHorizontalScroll() {
-        const track = document.querySelector('.portfolio-track');
-        const wrap = document.querySelector('.portfolio-horizontal-wrap');
-        const progressBar = document.querySelector('.portfolio-progress-bar');
-
-        if (!track || !wrap) return;
-
-        const cards = track.querySelectorAll('.portfolio-card');
-        const totalScrollWidth = track.scrollWidth - wrap.offsetWidth;
-
-        gsap.to(track, {
-            x: -totalScrollWidth,
-            ease: 'none',
-            scrollTrigger: {
-                trigger: '#work',
-                start: 'top 15%',
-                end: () => `+=${totalScrollWidth}`,
-                pin: true,
-                scrub: 1,
-                anticipatePin: 1,
-                onUpdate: (self) => {
-                    if (progressBar) {
-                        progressBar.style.width = `${self.progress * 100}%`;
-                    }
-                }
-            }
-        });
-
-        // Stagger card entrance
-        cards.forEach((card, i) => {
-            gsap.from(card, {
-                opacity: 0,
-                x: 100,
-                rotation: 3,
-                duration: 0.8,
-                ease: 'power2.out',
-                scrollTrigger: {
-                    trigger: card,
-                    containerAnimation: gsap.to(track, { x: -totalScrollWidth }),
-                    start: 'left 80%',
-                    toggleActions: 'play none none none'
-                }
-            });
-        });
-    }
-
-    /* ==========================================================
-       6. COUNTER ANIMATION
+       8. COUNTER ANIMATION
        ========================================================== */
     function initCounters() {
-        const counters = document.querySelectorAll('[data-count]');
-        counters.forEach(counter => {
+        document.querySelectorAll('[data-count]').forEach(counter => {
             const target = parseInt(counter.getAttribute('data-count'));
             const obj = { val: 0 };
-
             gsap.to(obj, {
-                val: target,
-                duration: 2,
-                ease: 'power2.out',
-                scrollTrigger: {
-                    trigger: counter,
-                    start: 'top 85%',
-                    toggleActions: 'play none none none'
-                },
-                onUpdate() {
-                    counter.textContent = Math.round(obj.val);
-                }
+                val: target, duration: 2.5, ease: 'power2.out',
+                scrollTrigger: { trigger: counter, start: 'top 85%', toggleActions: 'play none none none' },
+                onUpdate() { counter.textContent = Math.round(obj.val); }
             });
         });
     }
 
     /* ==========================================================
-       7. CUSTOM CURSOR
+       9. CUSTOM CURSOR — Crosshair
        ========================================================== */
     if (!isMobile) {
-        const dot = document.querySelector('.cursor-dot');
-        const ring = document.querySelector('.cursor-ring');
-        let mouseX = 0, mouseY = 0;
-        let ringX = 0, ringY = 0;
-        const ringSpeed = 0.15;
+        const cursor = document.querySelector('.cursor-crosshair');
+        let cursorX = 0, cursorY = 0;
 
         document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            dot.style.left = mouseX + 'px';
-            dot.style.top = mouseY + 'px';
+            cursorX = e.clientX;
+            cursorY = e.clientY;
+            cursor.style.left = cursorX + 'px';
+            cursor.style.top = cursorY + 'px';
         });
 
-        function animateRing() {
-            ringX += (mouseX - ringX) * ringSpeed;
-            ringY += (mouseY - ringY) * ringSpeed;
-            ring.style.left = ringX + 'px';
-            ring.style.top = ringY + 'px';
-            requestAnimationFrame(animateRing);
-        }
-        animateRing();
-
-        // Hover effects on interactive elements
         const hoverTargets = document.querySelectorAll('a, button, [data-magnetic], input, select, textarea');
         hoverTargets.forEach(target => {
-            target.addEventListener('mouseenter', () => {
-                dot.classList.add('hovering');
-                ring.classList.add('hovering');
-            });
-            target.addEventListener('mouseleave', () => {
-                dot.classList.remove('hovering');
-                ring.classList.remove('hovering');
-            });
+            target.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
+            target.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
         });
     }
 
     /* ==========================================================
-       8. MAGNETIC HOVER EFFECT
+       10. MAGNETIC HOVER — Nav links only (NOT submit button)
        ========================================================== */
     if (!isMobile) {
         document.querySelectorAll('[data-magnetic]').forEach(el => {
@@ -383,255 +530,46 @@ document.addEventListener('DOMContentLoaded', () => {
                 const rect = el.getBoundingClientRect();
                 const x = e.clientX - rect.left - rect.width / 2;
                 const y = e.clientY - rect.top - rect.height / 2;
-                const strength = 0.3;
-
-                gsap.to(el, {
-                    x: x * strength,
-                    y: y * strength,
-                    duration: 0.4,
-                    ease: 'power2.out'
-                });
+                gsap.to(el, { x: x * 0.3, y: y * 0.3, duration: 0.4, ease: 'power2.out' });
             });
 
             el.addEventListener('mouseleave', () => {
-                gsap.to(el, {
-                    x: 0,
-                    y: 0,
-                    duration: 0.6,
-                    ease: 'elastic.out(1, 0.4)'
-                });
+                gsap.to(el, { x: 0, y: 0, duration: 0.7, ease: 'elastic.out(1, 0.4)' });
             });
         });
     }
 
     /* ==========================================================
-       9. 3D TILT CARDS
+       11. SERVICE CARD HOVER — Radial spotlight
        ========================================================== */
     if (!isMobile) {
-        document.querySelectorAll('[data-tilt]').forEach(card => {
+        document.querySelectorAll('.service-card').forEach(card => {
             card.addEventListener('mousemove', (e) => {
                 const rect = card.getBoundingClientRect();
                 const x = (e.clientX - rect.left) / rect.width;
                 const y = (e.clientY - rect.top) / rect.height;
-
-                const rotateX = (y - 0.5) * -12;
-                const rotateY = (x - 0.5) * 12;
-
-                // Set CSS variable for radial spotlight
                 card.style.setProperty('--mouse-x', `${x * 100}%`);
                 card.style.setProperty('--mouse-y', `${y * 100}%`);
-
-                gsap.to(card, {
-                    rotateX: rotateX,
-                    rotateY: rotateY,
-                    duration: 0.5,
-                    ease: 'power2.out',
-                    transformPerspective: 1200
-                });
-            });
-
-            card.addEventListener('mouseleave', () => {
-                gsap.to(card, {
-                    rotateX: 0,
-                    rotateY: 0,
-                    duration: 0.8,
-                    ease: 'elastic.out(1, 0.5)'
-                });
             });
         });
     }
 
     /* ==========================================================
-       10. PARTICLE SYSTEM
-       ========================================================== */
-    const canvas = document.getElementById('particle-canvas');
-    if (canvas) {
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        const particleCount = isMobile ? 30 : 70;
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-
-        class Particle {
-            constructor() {
-                this.reset();
-            }
-
-            reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5;
-                this.speedX = (Math.random() - 0.5) * 0.3;
-                this.speedY = (Math.random() - 0.5) * 0.3;
-                this.opacity = Math.random() * 0.4 + 0.1;
-                this.fadeSpeed = Math.random() * 0.005 + 0.002;
-                this.growing = Math.random() > 0.5;
-            }
-
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-
-                if (this.growing) {
-                    this.opacity += this.fadeSpeed;
-                    if (this.opacity >= 0.5) this.growing = false;
-                } else {
-                    this.opacity -= this.fadeSpeed;
-                    if (this.opacity <= 0.05) this.growing = true;
-                }
-
-                // Wrap around
-                if (this.x < 0) this.x = canvas.width;
-                if (this.x > canvas.width) this.x = 0;
-                if (this.y < 0) this.y = canvas.height;
-                if (this.y > canvas.height) this.y = 0;
-            }
-
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(196, 30, 58, ${this.opacity})`;
-                ctx.fill();
-            }
-        }
-
-        // Initialize particles
-        for (let i = 0; i < particleCount; i++) {
-            particles.push(new Particle());
-        }
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
-
-            // Draw connections
-            for (let a = 0; a < particles.length; a++) {
-                for (let b = a + 1; b < particles.length; b++) {
-                    const dx = particles[a].x - particles[b].x;
-                    const dy = particles[a].y - particles[b].y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-
-                    if (dist < 120) {
-                        ctx.beginPath();
-                        ctx.moveTo(particles[a].x, particles[a].y);
-                        ctx.lineTo(particles[b].x, particles[b].y);
-                        ctx.strokeStyle = `rgba(196, 30, 58, ${0.05 * (1 - dist / 120)})`;
-                        ctx.lineWidth = 0.5;
-                        ctx.stroke();
-                    }
-                }
-            }
-
-            requestAnimationFrame(animateParticles);
-        }
-        animateParticles();
-    }
-
-    /* ==========================================================
-       11. HERO PARALLAX on Scroll
-       ========================================================== */
-    gsap.to('.hero-layer--shapes', {
-        y: -150,
-        ease: 'none',
-        scrollTrigger: {
-            trigger: '#hero',
-            start: 'top top',
-            end: 'bottom top',
-            scrub: true
-        }
-    });
-
-    gsap.to('.hero-logo-wrap', {
-        y: -100,
-        scale: 0.9,
-        opacity: 0,
-        ease: 'none',
-        scrollTrigger: {
-            trigger: '#hero',
-            start: 'top top',
-            end: 'bottom top',
-            scrub: true
-        }
-    });
-
-    gsap.to('.hero-content', {
-        y: -80,
-        opacity: 0,
-        ease: 'none',
-        scrollTrigger: {
-            trigger: '#hero',
-            start: '30% top',
-            end: 'bottom top',
-            scrub: true
-        }
-    });
-
-    /* ==========================================================
-       12. MOUSE PARALLAX on Hero (Desktop only)
-       ========================================================== */
-    if (!isMobile) {
-        const heroSection = document.getElementById('hero');
-        const shapesLayer = document.querySelector('.hero-layer--shapes');
-        const logoWrap = document.querySelector('.hero-logo-wrap');
-
-        heroSection.addEventListener('mousemove', (e) => {
-            const xPercent = (e.clientX / window.innerWidth - 0.5) * 2;
-            const yPercent = (e.clientY / window.innerHeight - 0.5) * 2;
-
-            gsap.to(shapesLayer, {
-                x: xPercent * 30,
-                y: yPercent * 20,
-                duration: 1,
-                ease: 'power2.out'
-            });
-
-            gsap.to(logoWrap, {
-                x: xPercent * -15,
-                y: yPercent * -10,
-                duration: 1.2,
-                ease: 'power2.out'
-            });
-        });
-    }
-
-    /* ==========================================================
-       13. NAVBAR — Hide/Show on Scroll + Glassmorphism
+       12. NAVBAR
        ========================================================== */
     let lastScrollY = 0;
-    const scrollThreshold = 80;
-
     function handleNavScroll() {
         const currentY = window.scrollY;
-
-        // Add glass effect
-        if (currentY > 50) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
-
-        // Hide/show on scroll direction
-        if (currentY > lastScrollY && currentY > scrollThreshold) {
-            navbar.classList.add('hidden');
-        } else {
-            navbar.classList.remove('hidden');
-        }
-
+        if (currentY > 50) { navbar.classList.add('scrolled'); }
+        else { navbar.classList.remove('scrolled'); }
+        if (currentY > lastScrollY && currentY > 80) { navbar.classList.add('hidden'); }
+        else { navbar.classList.remove('hidden'); }
         lastScrollY = currentY;
     }
-
     window.addEventListener('scroll', handleNavScroll, { passive: true });
 
     /* ==========================================================
-       14. MOBILE MENU
+       13. MOBILE MENU
        ========================================================== */
     const navToggle = document.getElementById('nav-toggle');
     const navMenu = document.getElementById('nav-menu');
@@ -654,90 +592,115 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ==========================================================
-       15. BACK TO TOP
+       14. BACK TO TOP
        ========================================================== */
     window.addEventListener('scroll', () => {
-        if (window.scrollY > 500) {
-            backToTop.classList.add('visible');
-        } else {
-            backToTop.classList.remove('visible');
-        }
+        if (window.scrollY > 500) { backToTop.classList.add('visible'); }
+        else { backToTop.classList.remove('visible'); }
     }, { passive: true });
 
     backToTop.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (lenis) { lenis.scrollTo(0, { duration: 2 }); }
+        else { window.scrollTo({ top: 0, behavior: 'smooth' }); }
     });
 
     /* ==========================================================
-       16. SMOOTH SCROLL for anchor links
+       15. SMOOTH SCROLL — Anchor links
        ========================================================== */
     document.querySelectorAll('a[href^="#"]').forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             const target = document.querySelector(link.getAttribute('href'));
             if (target) {
-                const offset = 80; // navbar height
-                const top = target.getBoundingClientRect().top + window.scrollY - offset;
-                window.scrollTo({ top, behavior: 'smooth' });
+                const offset = 80;
+                if (lenis) { lenis.scrollTo(target, { offset: -offset, duration: 1.5 }); }
+                else {
+                    const top = target.getBoundingClientRect().top + window.scrollY - offset;
+                    window.scrollTo({ top, behavior: 'smooth' });
+                }
             }
         });
     });
 
     /* ==========================================================
-       17. CONTACT FORM
+       16. CONTACT FORM
        ========================================================== */
     const form = document.getElementById('contact-form');
     if (form) {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             const btn = form.querySelector('.form-submit span');
+            const submitBtn = form.querySelector('.form-submit');
             const originalText = btn.textContent;
+
             btn.textContent = 'Sent!';
-            gsap.to(btn, {
-                color: '#C41E3A',
-                duration: 0.3
-            });
+            gsap.to(submitBtn, { borderColor: '#C41E3A', duration: 0.3 });
+            gsap.to(btn, { color: '#C41E3A', duration: 0.3 });
+
             setTimeout(() => {
                 btn.textContent = originalText;
                 gsap.to(btn, { color: '', duration: 0.3 });
+                gsap.to(submitBtn, { borderColor: '', duration: 0.3 });
                 form.reset();
             }, 2500);
         });
     }
 
     /* ==========================================================
-       18. SCROLL VELOCITY — Grain Intensity
+       17. GRAIN INTENSITY
        ========================================================== */
     const grainOverlay = document.querySelector('.grain-overlay');
-    let scrollVelocity = 0;
-    let lastScrollPos = 0;
+    let grainScrollPos = 0;
 
-    function updateGrainIntensity() {
+    function updateGrain() {
         const currentPos = window.scrollY;
-        scrollVelocity = Math.abs(currentPos - lastScrollPos);
-        lastScrollPos = currentPos;
-
-        // Map velocity to opacity: base 0.035, max ~0.12
-        const intensity = Math.min(0.035 + scrollVelocity * 0.003, 0.12);
-        if (grainOverlay) {
-            grainOverlay.style.opacity = intensity;
-        }
-
-        requestAnimationFrame(updateGrainIntensity);
+        const velocity = Math.abs(currentPos - grainScrollPos);
+        grainScrollPos = currentPos;
+        const intensity = Math.min(0.035 + velocity * 0.003, 0.12);
+        if (grainOverlay) grainOverlay.style.opacity = intensity;
+        requestAnimationFrame(updateGrain);
     }
-    updateGrainIntensity();
+    updateGrain();
 
     /* ==========================================================
-       19. MARQUEE SPEED on Scroll
+       18. MARQUEE — GSAP-driven (no CSS animation stutter)
        ========================================================== */
-    const marquees = document.querySelectorAll('.marquee-track');
-    window.addEventListener('scroll', () => {
-        const velocity = Math.abs(window.scrollY - lastScrollPos);
-        const speedBoost = Math.min(velocity * 0.5, 50);
+    document.querySelectorAll('.marquee-track').forEach(track => {
+        track.style.animation = 'none';
 
-        marquees.forEach(track => {
-            track.style.animationDuration = Math.max(10, 25 - speedBoost) + 's';
+        const isReverse = track.closest('.marquee-reverse');
+        const speed = 80;
+        const items = track.innerHTML;
+        track.innerHTML = items + items;
+        const totalWidth = track.scrollWidth / 2;
+
+        if (isReverse) {
+            gsap.set(track, { x: -totalWidth });
+            gsap.to(track, { x: 0, duration: totalWidth / speed, ease: 'none', repeat: -1 });
+        } else {
+            gsap.to(track, { x: -totalWidth, duration: totalWidth / speed, ease: 'none', repeat: -1 });
+        }
+    });
+
+    /* ==========================================================
+       19. PORTFOLIO HOVER PARALLAX
+       ========================================================== */
+    if (!isMobile) {
+        document.querySelectorAll('.portfolio-item').forEach(item => {
+            const img = item.querySelector('.portfolio-item-img img');
+            if (!img) return;
+
+            item.addEventListener('mousemove', (e) => {
+                const rect = item.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+                gsap.to(img, { x: x * 20, y: y * 20, duration: 0.6, ease: 'power2.out' });
+            });
+
+            item.addEventListener('mouseleave', () => {
+                gsap.to(img, { x: 0, y: 0, duration: 0.8, ease: 'power2.out' });
+            });
         });
-    }, { passive: true });
+    }
 
 });

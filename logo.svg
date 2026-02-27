@@ -1,14 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
-  <!-- Left diamond outline -->
-  <path d="M25,0 L50,55 L25,110 L0,55 Z" />
-  <!-- Left diamond vertical diagonal -->
-  <line x1="25" y1="0" x2="25" y2="110" />
-  <!-- Left diamond horizontal diagonal -->
-  <line x1="0" y1="55" x2="50" y2="55" />
-  <!-- Right diamond outline -->
-  <path d="M75,0 L100,55 L75,110 L50,55 Z" />
-  <!-- Right diamond vertical diagonal -->
-  <line x1="75" y1="0" x2="75" y2="110" />
-  <!-- Right diamond horizontal diagonal -->
-  <line x1="50" y1="55" x2="100" y2="55" />
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 793.8 981.82">
+  <defs>
+    <style>
+      .cls-1 {
+        stroke-width: 40px;
+      }
+
+      .cls-1, .cls-2 {
+        fill: none;
+        stroke: #231f20;
+        stroke-miterlimit: 10;
+      }
+
+      .cls-2 {
+        stroke-width: 16px;
+      }
+    </style>
+  </defs>
+  <path class="cls-1" d="M21.87,486.21q185.63,404.09,185.63,404.15l185.63-404.15L207.5,50.98,21.87,486.21Z"/>
+  <polygon class="cls-1" points="393.14 486.21 584.04 50.98 771.87 486.21 582.5 890.36 393.14 486.21"/>
+  <polyline class="cls-2" points="21.87 486.21 393.14 486.21 771.87 486.21"/>
 </svg>

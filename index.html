@@ -4,60 +4,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WFILMS — Video, Photo, Design</title>
+    <title>Wollenburg Media — Video, Photo, Design</title>
     <meta name="description"
-        content="WFILMS is a premium media production company specializing in cinematic videography, dramatic photography, and cutting-edge web design.">
+        content="Wollenburg Media is a premium media production company specializing in cinematic videography, dramatic photography, and cutting-edge web design.">
     <meta name="keywords"
-        content="videography, photography, web design, media production, WFILMS, cinematic, creative agency">
+        content="videography, photography, web design, media production, Wollenburg Media, cinematic, creative agency">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
-    <!-- GSAP + Plugins -->
+    <!-- GSAP + ScrollTrigger -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+
+    <!-- Lenis Smooth Scroll -->
+    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js" defer></script>
 
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
-    <!-- ========== SVG FILTERS ========== -->
-    <svg class="svg-defs" aria-hidden="true">
-        <defs>
-            <filter id="grain-filter">
-                <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" stitchTiles="stitch"
-                    result="noise" />
-                <feColorMatrix type="saturate" values="0" in="noise" result="mono" />
-                <feBlend in="SourceGraphic" in2="mono" mode="multiply" />
-            </filter>
-        </defs>
-    </svg>
-
     <!-- ========== FILM GRAIN ========== -->
     <div class="grain-overlay" aria-hidden="true"></div>
 
     <!-- ========== CUSTOM CURSOR ========== -->
-    <div class="cursor-dot" aria-hidden="true"></div>
-    <div class="cursor-ring" aria-hidden="true"></div>
+    <div class="cursor-crosshair" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="32" height="32">
+            <line x1="16" y1="0" x2="16" y2="12" stroke="currentColor" stroke-width="1.5" />
+            <line x1="16" y1="20" x2="16" y2="32" stroke="currentColor" stroke-width="1.5" />
+            <line x1="0" y1="16" x2="12" y2="16" stroke="currentColor" stroke-width="1.5" />
+            <line x1="20" y1="16" x2="32" y2="16" stroke="currentColor" stroke-width="1.5" />
+            <circle cx="16" cy="16" r="3" fill="none" stroke="currentColor" stroke-width="1" />
+        </svg>
+    </div>
 
     <!-- ========== PRELOADER ========== -->
     <div id="preloader">
         <div class="preloader-inner">
-            <svg class="preloader-logo" viewBox="0 0 100 110" fill="none" stroke="#fff" stroke-width="4"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path class="logo-path" d="M25,0 L50,55 L25,110 L0,55 Z" />
-                <line class="logo-path" x1="25" y1="0" x2="25" y2="110" />
-                <line class="logo-path" x1="0" y1="55" x2="50" y2="55" />
-                <path class="logo-path" d="M75,0 L100,55 L75,110 L50,55 Z" />
-                <line class="logo-path" x1="75" y1="0" x2="75" y2="110" />
-                <line class="logo-path" x1="50" y1="55" x2="100" y2="55" />
-            </svg>
-            <div class="preloader-text" data-text="WFILMS">WFILMS</div>
+            <div class="preloader-logo-wrap">
+                <svg class="preloader-logo" viewBox="0 0 100 110" fill="none" stroke="#fff" stroke-width="4"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path class="logo-path" d="M25,0 L50,55 L25,110 L0,55 Z" />
+                    <line class="logo-path" x1="25" y1="0" x2="25" y2="110" />
+                    <line class="logo-path" x1="0" y1="55" x2="50" y2="55" />
+                    <path class="logo-path" d="M75,0 L100,55 L75,110 L50,55 Z" />
+                    <line class="logo-path" x1="75" y1="0" x2="75" y2="110" />
+                    <line class="logo-path" x1="50" y1="55" x2="100" y2="55" />
+                </svg>
+            </div>
+            <div class="preloader-text-wrap">
+                <span class="preloader-text-char">W</span>
+                <span class="preloader-text-char">O</span>
+                <span class="preloader-text-char">L</span>
+                <span class="preloader-text-char">L</span>
+                <span class="preloader-text-char">E</span>
+                <span class="preloader-text-char">N</span>
+                <span class="preloader-text-char">B</span>
+                <span class="preloader-text-char">U</span>
+                <span class="preloader-text-char">R</span>
+                <span class="preloader-text-char">G</span>
+            </div>
+            <div class="preloader-sub">MEDIA</div>
             <div class="preloader-bar">
                 <div class="preloader-bar-fill"></div>
             </div>
@@ -66,8 +78,8 @@
 
     <!-- ========== NAVIGATION ========== -->
     <nav id="navbar">
-        <a href="#" class="nav-logo" aria-label="WFILMS Home">
-            <img src="Branding/W films logo_white.png" alt="WFILMS" width="40" height="40">
+        <a href="#" class="nav-logo" aria-label="Wollenburg Media Home">
+            <img src="Branding/W films logo_white.png" alt="Wollenburg Media" width="40" height="40">
         </a>
 
         <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
@@ -84,51 +96,71 @@
         </ul>
     </nav>
 
-    <!-- ========== HERO ========== -->
+    <!-- ========== HERO — 3D Parallax Camera ========== -->
     <section id="hero">
+        <!-- Animated particle canvas background -->
+        <canvas id="hero-particles" aria-hidden="true"></canvas>
+
         <!-- Parallax depth layers -->
-        <div class="hero-layer hero-layer--bg"></div>
-        <div class="hero-layer hero-layer--shapes" aria-hidden="true">
-            <div class="floating-shape shape-1"></div>
-            <div class="floating-shape shape-2"></div>
-            <div class="floating-shape shape-3"></div>
-            <div class="floating-shape shape-4"></div>
-            <div class="floating-shape shape-5"></div>
-            <div class="floating-shape shape-6"></div>
+        <div class="hero-parallax-container">
+            <div class="hero-depth-layer" data-depth="0.1">
+                <div class="depth-element depth-grid"></div>
+            </div>
+            <div class="hero-depth-layer" data-depth="0.25">
+                <div class="depth-element depth-line depth-line-1"></div>
+                <div class="depth-element depth-line depth-line-2"></div>
+                <div class="depth-element depth-circle depth-circle-1"></div>
+            </div>
+            <div class="hero-depth-layer" data-depth="0.4">
+                <div class="depth-element depth-diamond depth-diamond-1"></div>
+                <div class="depth-element depth-line depth-line-3"></div>
+                <div class="depth-element depth-dot depth-dot-1"></div>
+                <div class="depth-element depth-dot depth-dot-2"></div>
+                <div class="depth-element depth-dot depth-dot-3"></div>
+            </div>
+            <div class="hero-depth-layer" data-depth="0.6">
+                <div class="depth-element depth-frame depth-frame-1"></div>
+                <div class="depth-element depth-dot depth-dot-4"></div>
+                <div class="depth-element depth-dot depth-dot-5"></div>
+            </div>
+            <div class="hero-depth-layer" data-depth="0.85">
+                <div class="depth-element depth-line depth-line-4"></div>
+                <div class="depth-element depth-line depth-line-5"></div>
+            </div>
         </div>
-        <div class="hero-layer hero-layer--particles" aria-hidden="true">
-            <canvas id="particle-canvas"></canvas>
-        </div>
+
+        <!-- Noise vignette -->
         <div class="hero-noise" aria-hidden="true"></div>
 
-        <!-- Giant watermark logo behind text -->
-        <div class="hero-logo-wrap" aria-hidden="true">
-            <svg class="hero-logo-svg" viewBox="0 0 100 110" fill="none" stroke="rgba(255,255,255,0.04)"
-                stroke-width="2">
-                <path d="M25,0 L50,55 L25,110 L0,55 Z" />
-                <line x1="25" y1="0" x2="25" y2="110" />
-                <line x1="0" y1="55" x2="50" y2="55" />
-                <path d="M75,0 L100,55 L75,110 L50,55 Z" />
-                <line x1="75" y1="0" x2="75" y2="110" />
-                <line x1="50" y1="55" x2="100" y2="55" />
-            </svg>
+        <!-- Logo watermark instead of W -->
+        <div class="hero-watermark" aria-hidden="true">
+            <img src="Branding/W films logo_white.png" alt="" class="hero-watermark-logo">
         </div>
 
-        <div class="hero-content">
-            <h1 class="hero-title" data-split-text>WFILMS</h1>
-            <p class="hero-subtitle" data-split-text>CINEMATIC MEDIA PRODUCTION</p>
+        <div class="hero-content" data-depth="0.5">
+            <div class="hero-label">
+                <span class="hero-label-line"></span>
+                <span class="hero-label-text">Media Production Studio</span>
+                <span class="hero-label-line"></span>
+            </div>
+
+            <h1 class="hero-title" data-split-text>WOLLENBURG</h1>
+            <p class="hero-title-sub">MEDIA</p>
 
             <div class="hero-tagline-wrap">
                 <div class="hero-tagline">
-                    <span class="tagline-word">VIDEO</span>
-                    <span class="tagline-dot">•</span>
-                    <span class="tagline-word">PHOTO</span>
-                    <span class="tagline-dot">•</span>
-                    <span class="tagline-word">DESIGN</span>
+                    <span class="tagline-word" data-reveal>VIDEO</span>
+                    <span class="tagline-dot">◆</span>
+                    <span class="tagline-word" data-reveal>PHOTO</span>
+                    <span class="tagline-dot">◆</span>
+                    <span class="tagline-word" data-reveal>DESIGN</span>
                 </div>
             </div>
 
-            <a href="#work" class="hero-cta" data-magnetic>
+            <p class="hero-description" data-reveal>Cinematic storytelling. Bold visuals. Immersive digital experiences.
+            </p>
+
+            <a href="#work" class="hero-cta" data-magnetic id="hero-cta">
                 <span class="cta-text">Explore Our Work</span>
                 <span class="cta-icon">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -138,7 +170,7 @@
             </a>
         </div>
 
-        <div class="scroll-indicator">
+        <div class="scroll-indicator" id="scroll-indicator">
             <span>Scroll</span>
             <div class="scroll-line"></div>
         </div>
@@ -182,8 +214,7 @@
         </div>
 
         <div class="services-grid">
-            <!-- Videography -->
-            <article class="service-card" id="service-video" data-tilt>
+            <article class="service-card" id="service-video">
                 <div class="service-img-wrap">
                     <img src="images/videography.png" alt="Professional Videography" loading="lazy">
                     <div class="service-img-overlay"></div>
@@ -203,8 +234,7 @@
                 </div>
             </article>
 
-            <!-- Photography -->
-            <article class="service-card" id="service-photo" data-tilt>
+            <article class="service-card" id="service-photo">
                 <div class="service-img-wrap">
                     <img src="images/photography.png" alt="Professional Photography" loading="lazy">
                     <div class="service-img-overlay"></div>
@@ -224,8 +254,7 @@
                 </div>
             </article>
 
-            <!-- Web Design -->
-            <article class="service-card" id="service-web" data-tilt>
+            <article class="service-card" id="service-web">
                 <div class="service-img-wrap">
                     <img src="images/webdesign.png" alt="Web Design" loading="lazy">
                     <div class="service-img-overlay"></div>
@@ -247,136 +276,85 @@
         </div>
     </section>
 
-    <!-- ========== PORTFOLIO — HORIZONTAL SCROLL ========== -->
+    <!-- ========== PORTFOLIO SHOWCASE ========== -->
     <section id="work">
         <div class="section-header">
             <span class="section-label" data-reveal>Selected Projects</span>
             <h2 class="section-title" data-split-text>WORK</h2>
         </div>
 
-        <div class="portfolio-horizontal-wrap">
-            <div class="portfolio-track">
-                <div class="portfolio-card" data-category="video">
-                    <div class="portfolio-card-img">
-                        <img src="images/videography.png" alt="Cinematic Brand Film" loading="lazy">
-                    </div>
-                    <div class="portfolio-card-info">
-                        <span class="portfolio-cat">Videography</span>
-                        <h4 class="portfolio-title">Cinematic Brand Film</h4>
-                        <p class="portfolio-excerpt">A full-scale brand narrative for a luxury automotive campaign, shot
-                            on RED with anamorphic lenses.</p>
-                    </div>
+        <div class="portfolio-showcase">
+            <div class="portfolio-item" data-category="video">
+                <div class="portfolio-item-img">
+                    <img src="images/videography.png" alt="Cinematic Brand Film" loading="lazy">
                 </div>
-
-                <div class="portfolio-card" data-category="photo">
-                    <div class="portfolio-card-img">
-                        <img src="images/portfolio-fashion.png" alt="Editorial Series" loading="lazy">
-                    </div>
-                    <div class="portfolio-card-info">
-                        <span class="portfolio-cat">Photography</span>
-                        <h4 class="portfolio-title">Editorial Series</h4>
-                        <p class="portfolio-excerpt">High-fashion editorial spread with dramatic studio lighting and
-                            bold conceptual styling.</p>
-                    </div>
-                </div>
-
-                <div class="portfolio-card" data-category="photo">
-                    <div class="portfolio-card-img">
-                        <img src="images/portfolio-landscape.png" alt="Wilderness Collection" loading="lazy">
-                    </div>
-                    <div class="portfolio-card-info">
-                        <span class="portfolio-cat">Photography</span>
-                        <h4 class="portfolio-title">Wilderness Collection</h4>
-                        <p class="portfolio-excerpt">Landscape photography capturing the raw beauty of untouched
-                            wilderness across three continents.</p>
-                    </div>
-                </div>
-
-                <div class="portfolio-card" data-category="photo">
-                    <div class="portfolio-card-img">
-                        <img src="images/portfolio-urban.png" alt="Urban Nights" loading="lazy">
-                    </div>
-                    <div class="portfolio-card-info">
-                        <span class="portfolio-cat">Photography</span>
-                        <h4 class="portfolio-title">Urban Nights</h4>
-                        <p class="portfolio-excerpt">Street photography series exploring neon-lit cityscapes and human
-                            stories after dark.</p>
-                    </div>
-                </div>
-
-                <div class="portfolio-card" data-category="web">
-                    <div class="portfolio-card-img">
-                        <img src="images/webdesign.png" alt="Agency Website Redesign" loading="lazy">
-                    </div>
-                    <div class="portfolio-card-info">
-                        <span class="portfolio-cat">Web Design</span>
-                        <h4 class="portfolio-title">Agency Redesign</h4>
-                        <p class="portfolio-excerpt">Full custom website with GSAP animations, 3D effects, and a bespoke
-                            design system.</p>
-                    </div>
-                </div>
-
-                <div class="portfolio-card" data-category="photo">
-                    <div class="portfolio-card-img">
-                        <img src="images/photography.png" alt="Portrait Study" loading="lazy">
-                    </div>
-                    <div class="portfolio-card-info">
-                        <span class="portfolio-cat">Photography</span>
-                        <h4 class="portfolio-title">Portrait Study</h4>
-                        <p class="portfolio-excerpt">Intimate portrait series using natural light and environmental
-                            storytelling.</p>
-                    </div>
+                <div class="portfolio-item-content">
+                    <span class="portfolio-cat">Videography</span>
+                    <h3 class="portfolio-title">Cinematic Brand Film</h3>
+                    <p class="portfolio-excerpt">A full-scale brand narrative for a luxury automotive campaign, shot on
+                        RED with anamorphic lenses.</p>
                 </div>
             </div>
-        </div>
 
-        <div class="portfolio-progress">
-            <div class="portfolio-progress-bar"></div>
-        </div>
-    </section>
-
-    <!-- ========== ABOUT ========== -->
-    <section id="about">
-        <div class="about-layout">
-            <div class="about-text-col">
-                <span class="section-label" data-reveal>Who We Are</span>
-                <h2 class="section-title about-title" data-split-text>ABOUT<br>WFILMS</h2>
-                <p class="about-lead" data-reveal>We don't just create content — we build <em>experiences</em>. WFILMS
-                    is a media production studio driven by bold vision, aggressive aesthetics, and a relentless pursuit
-                    of
-                    cinematic excellence.</p>
-                <p class="about-body" data-reveal>From nailing that perfect shot in the golden hour to engineering
-                    pixel-perfect web experiences, every project gets our full creative intensity. We believe media
-                    should
-                    be felt, not just seen.</p>
-            </div>
-            <div class="about-stats-col">
-                <div class="stat-item">
-                    <span class="stat-number" data-count="150">0</span>
-                    <span class="stat-plus">+</span>
-                    <span class="stat-label">Projects Delivered</span>
+            <div class="portfolio-item" data-category="photo">
+                <div class="portfolio-item-img">
+                    <img src="images/portfolio-fashion.png" alt="Editorial Series" loading="lazy">
                 </div>
-                <div class="stat-item">
-                    <span class="stat-number" data-count="50">0</span>
-                    <span class="stat-plus">+</span>
-                    <span class="stat-label">Happy Clients</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" data-count="5">0</span>
-                    <span class="stat-plus">+</span>
-                    <span class="stat-label">Years of Craft</span>
+                <div class="portfolio-item-content">
+                    <span class="portfolio-cat">Photography</span>
+                    <h3 class="portfolio-title">Editorial Series</h3>
+                    <p class="portfolio-excerpt">High-fashion editorial spread with dramatic studio lighting and bold
+                        conceptual styling.</p>
                 </div>
             </div>
-        </div>
-        <div class="about-geo" aria-hidden="true">
-            <svg viewBox="0 0 100 110" fill="none" stroke="rgba(196,30,58,0.12)" stroke-width="1.5">
-                <path d="M25,0 L50,55 L25,110 L0,55 Z" />
-                <line x1="25" y1="0" x2="25" y2="110" />
-                <line x1="0" y1="55" x2="50" y2="55" />
-                <path d="M75,0 L100,55 L75,110 L50,55 Z" />
-                <line x1="75" y1="0" x2="75" y2="110" />
-                <line x1="50" y1="55" x2="100" y2="55" />
-            </svg>
+
+            <div class="portfolio-item" data-category="photo">
+                <div class="portfolio-item-img">
+                    <img src="images/portfolio-landscape.png" alt="Wilderness Collection" loading="lazy">
+                </div>
+                <div class="portfolio-item-content">
+                    <span class="portfolio-cat">Photography</span>
+                    <h3 class="portfolio-title">Wilderness Collection</h3>
+                    <p class="portfolio-excerpt">Landscape photography capturing the raw beauty of untouched wilderness
+                        across three continents.</p>
+                </div>
+            </div>
+
+            <div class="portfolio-item" data-category="photo">
+                <div class="portfolio-item-img">
+                    <img src="images/portfolio-urban.png" alt="Urban Nights" loading="lazy">
+                </div>
+                <div class="portfolio-item-content">
+                    <span class="portfolio-cat">Photography</span>
+                    <h3 class="portfolio-title">Urban Nights</h3>
+                    <p class="portfolio-excerpt">Street photography series exploring neon-lit cityscapes and human
+                        stories after dark.</p>
+                </div>
+            </div>
+
+            <div class="portfolio-item" data-category="web">
+                <div class="portfolio-item-img">
+                    <img src="images/webdesign.png" alt="Agency Website Redesign" loading="lazy">
+                </div>
+                <div class="portfolio-item-content">
+                    <span class="portfolio-cat">Web Design</span>
+                    <h3 class="portfolio-title">Agency Redesign</h3>
+                    <p class="portfolio-excerpt">Full custom website with GSAP animations, 3D effects, and a bespoke
+                        design system.</p>
+                </div>
+            </div>
+
+            <div class="portfolio-item" data-category="photo">
+                <div class="portfolio-item-img">
+                    <img src="images/photography.png" alt="Portrait Study" loading="lazy">
+                </div>
+                <div class="portfolio-item-content">
+                    <span class="portfolio-cat">Photography</span>
+                    <h3 class="portfolio-title">Portrait Study</h3>
+                    <p class="portfolio-excerpt">Intimate portrait series using natural light and environmental
+                        storytelling.</p>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -410,9 +388,52 @@
         </div>
     </div>
 
+    <!-- ========== ABOUT ========== -->
+    <section id="about">
+        <div class="about-layout">
+            <div class="about-text-col">
+                <span class="section-label" data-reveal>Who We Are</span>
+                <h2 class="section-title about-title" data-split-text>ABOUT</h2>
+                <p class="about-lead" data-reveal>We don't just create content — we build <em>experiences</em>.
+                    Wollenburg Media
+                    is a production studio driven by bold vision, aggressive aesthetics, and a relentless pursuit
+                    of cinematic excellence.</p>
+                <p class="about-body" data-reveal>From nailing that perfect shot in the golden hour to engineering
+                    pixel-perfect web experiences, every project gets our full creative intensity. We believe media
+                    should be felt, not just seen.</p>
+            </div>
+            <div class="about-visual-col">
+                <div class="about-logo-decoration" aria-hidden="true">
+                    <img src="Branding/W films logo_white.png" alt="" class="about-deco-logo">
+                    <div class="about-deco-ring about-deco-ring-1"></div>
+                    <div class="about-deco-ring about-deco-ring-2"></div>
+                    <div class="about-deco-ring about-deco-ring-3"></div>
+                    <div class="about-deco-glow"></div>
+                </div>
+                <div class="about-stats-col">
+                    <div class="stat-item">
+                        <span class="stat-number" data-count="150">0</span>
+                        <span class="stat-plus">+</span>
+                        <span class="stat-label">Projects Delivered</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" data-count="50">0</span>
+                        <span class="stat-plus">+</span>
+                        <span class="stat-label">Happy Clients</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" data-count="5">0</span>
+                        <span class="stat-plus">+</span>
+                        <span class="stat-label">Years of Craft</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- ========== CONTACT ========== -->
     <section id="contact">
-        <div class="contact-watermark" aria-hidden="true">LET'S TALK</div>
+        <div class="contact-bg-text" aria-hidden="true">LET'S TALK</div>
         <div class="contact-layout">
             <div class="contact-text-col">
                 <span class="section-label" data-reveal>Get In Touch</span>
@@ -427,12 +448,12 @@
             <div class="contact-form-col">
                 <form class="contact-form" id="contact-form" novalidate>
                     <div class="form-group">
-                        <input type="text" id="form-name" name="name" required placeholder=" ">
+                        <input type="text" id="form-name" name="name" required placeholder=" " autocomplete="name">
                         <label for="form-name">Your Name</label>
                         <div class="form-line"></div>
                     </div>
                     <div class="form-group">
-                        <input type="email" id="form-email" name="email" required placeholder=" ">
+                        <input type="email" id="form-email" name="email" required placeholder=" " autocomplete="email">
                         <label for="form-email">Email Address</label>
                         <div class="form-line"></div>
                     </div>
@@ -452,7 +473,7 @@
                         <label for="form-message">Tell us about your project</label>
                         <div class="form-line"></div>
                     </div>
-                    <button type="submit" class="form-submit" data-magnetic>
+                    <button type="submit" class="form-submit" id="form-submit">
                         <span>Send Message</span>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
@@ -468,8 +489,8 @@
     <footer id="footer">
         <div class="footer-top">
             <div class="footer-logo">
-                <img src="Branding/W films logo_white.png" alt="WFILMS" width="48" height="48">
-                <span class="footer-brand">WFILMS</span>
+                <img src="Branding/W films logo_white.png" alt="Wollenburg Media" width="48" height="48">
+                <span class="footer-brand">WOLLENBURG MEDIA</span>
             </div>
             <div class="footer-links">
                 <a href="#services" data-magnetic>Services</a>
@@ -479,7 +500,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 WFILMS. All rights reserved.</p>
+            <p>&copy; 2026 Wollenburg Media. All rights reserved.</p>
             <span class="footer-tagline">VIDEO • PHOTO • DESIGN</span>
         </div>
     </footer>
