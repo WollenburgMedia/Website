@@ -14,10 +14,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
-    <!-- GSAP + ScrollTrigger -->
+    <!-- GSAP + Plugins -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
 
@@ -26,7 +26,7 @@
 
 <body>
 
-    <!-- ========== SVG FILTERS (hidden) ========== -->
+    <!-- ========== SVG FILTERS ========== -->
     <svg class="svg-defs" aria-hidden="true">
         <defs>
             <filter id="grain-filter">
@@ -35,18 +35,15 @@
                 <feColorMatrix type="saturate" values="0" in="noise" result="mono" />
                 <feBlend in="SourceGraphic" in2="mono" mode="multiply" />
             </filter>
-            <filter id="halftone">
-                <feTurbulence type="turbulence" baseFrequency="1.5" numOctaves="1" result="dots" />
-                <feColorMatrix type="saturate" values="0" in="dots" />
-                <feComponentTransfer>
-                    <feFuncA type="discrete" tableValues="0 1" />
-                </feComponentTransfer>
-            </filter>
         </defs>
     </svg>
 
-    <!-- ========== FILM GRAIN OVERLAY ========== -->
+    <!-- ========== FILM GRAIN ========== -->
     <div class="grain-overlay" aria-hidden="true"></div>
+
+    <!-- ========== CUSTOM CURSOR ========== -->
+    <div class="cursor-dot" aria-hidden="true"></div>
+    <div class="cursor-ring" aria-hidden="true"></div>
 
     <!-- ========== PRELOADER ========== -->
     <div id="preloader">
@@ -60,7 +57,7 @@
                 <line class="logo-path" x1="75" y1="0" x2="75" y2="110" />
                 <line class="logo-path" x1="50" y1="55" x2="100" y2="55" />
             </svg>
-            <div class="preloader-text">WFILMS</div>
+            <div class="preloader-text" data-text="WFILMS">WFILMS</div>
             <div class="preloader-bar">
                 <div class="preloader-bar-fill"></div>
             </div>
@@ -80,44 +77,64 @@
         </button>
 
         <ul class="nav-menu" id="nav-menu">
-            <li><a href="#services" class="nav-link">Services</a></li>
-            <li><a href="#work" class="nav-link">Work</a></li>
-            <li><a href="#about" class="nav-link">About</a></li>
-            <li><a href="#contact" class="nav-link">Contact</a></li>
+            <li><a href="#services" class="nav-link" data-magnetic>Services</a></li>
+            <li><a href="#work" class="nav-link" data-magnetic>Work</a></li>
+            <li><a href="#about" class="nav-link" data-magnetic>About</a></li>
+            <li><a href="#contact" class="nav-link" data-magnetic>Contact</a></li>
         </ul>
     </nav>
 
     <!-- ========== HERO ========== -->
     <section id="hero">
-        <div class="hero-bg"></div>
+        <!-- Parallax depth layers -->
+        <div class="hero-layer hero-layer--bg"></div>
+        <div class="hero-layer hero-layer--shapes" aria-hidden="true">
+            <div class="floating-shape shape-1"></div>
+            <div class="floating-shape shape-2"></div>
+            <div class="floating-shape shape-3"></div>
+            <div class="floating-shape shape-4"></div>
+            <div class="floating-shape shape-5"></div>
+            <div class="floating-shape shape-6"></div>
+        </div>
+        <div class="hero-layer hero-layer--particles" aria-hidden="true">
+            <canvas id="particle-canvas"></canvas>
+        </div>
         <div class="hero-noise" aria-hidden="true"></div>
 
+        <!-- Giant watermark logo behind text -->
+        <div class="hero-logo-wrap" aria-hidden="true">
+            <svg class="hero-logo-svg" viewBox="0 0 100 110" fill="none" stroke="rgba(255,255,255,0.04)"
+                stroke-width="2">
+                <path d="M25,0 L50,55 L25,110 L0,55 Z" />
+                <line x1="25" y1="0" x2="25" y2="110" />
+                <line x1="0" y1="55" x2="50" y2="55" />
+                <path d="M75,0 L100,55 L75,110 L50,55 Z" />
+                <line x1="75" y1="0" x2="75" y2="110" />
+                <line x1="50" y1="55" x2="100" y2="55" />
+            </svg>
+        </div>
+
         <div class="hero-content">
-            <div class="hero-logo-wrap" aria-hidden="true">
-                <svg class="hero-logo-svg" viewBox="0 0 100 110" fill="none" stroke="rgba(255,255,255,0.08)"
-                    stroke-width="3">
-                    <path d="M25,0 L50,55 L25,110 L0,55 Z" />
-                    <line x1="25" y1="0" x2="25" y2="110" />
-                    <line x1="0" y1="55" x2="50" y2="55" />
-                    <path d="M75,0 L100,55 L75,110 L50,55 Z" />
-                    <line x1="75" y1="0" x2="75" y2="110" />
-                    <line x1="50" y1="55" x2="100" y2="55" />
-                </svg>
+            <h1 class="hero-title" data-split-text>WFILMS</h1>
+            <p class="hero-subtitle" data-split-text>CINEMATIC MEDIA PRODUCTION</p>
+
+            <div class="hero-tagline-wrap">
+                <div class="hero-tagline">
+                    <span class="tagline-word">VIDEO</span>
+                    <span class="tagline-dot">•</span>
+                    <span class="tagline-word">PHOTO</span>
+                    <span class="tagline-dot">•</span>
+                    <span class="tagline-word">DESIGN</span>
+                </div>
             </div>
 
-            <h1 class="hero-title" data-text="WFILMS">WFILMS</h1>
-
-            <div class="hero-tagline">
-                <span class="tagline-line" style="--i:0">VIDEO, PHOTO, DESIGN</span>
-                <span class="tagline-line" style="--i:1">VIDEO, PHOTO, DESIGN</span>
-                <span class="tagline-line" style="--i:2">VIDEO, PHOTO, DESIGN</span>
-                <span class="tagline-line" style="--i:3">VIDEO, PHOTO, DESIGN</span>
-                <span class="tagline-line" style="--i:4">VIDEO, PHOTO, DESIGN</span>
-            </div>
-
-            <a href="#work" class="hero-cta">
-                <span class="cta-text">View Our Work</span>
-                <span class="cta-arrow">&#8599;</span>
+            <a href="#work" class="hero-cta" data-magnetic>
+                <span class="cta-text">Explore Our Work</span>
+                <span class="cta-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </span>
             </a>
         </div>
 
@@ -127,26 +144,56 @@
         </div>
     </section>
 
+    <!-- ========== INFINITE MARQUEE ========== -->
+    <div class="marquee-section" aria-hidden="true">
+        <div class="marquee-track">
+            <span class="marquee-item">VIDEO</span>
+            <span class="marquee-sep">✦</span>
+            <span class="marquee-item">PHOTO</span>
+            <span class="marquee-sep">✦</span>
+            <span class="marquee-item">DESIGN</span>
+            <span class="marquee-sep">✦</span>
+            <span class="marquee-item">VIDEO</span>
+            <span class="marquee-sep">✦</span>
+            <span class="marquee-item">PHOTO</span>
+            <span class="marquee-sep">✦</span>
+            <span class="marquee-item">DESIGN</span>
+            <span class="marquee-sep">✦</span>
+            <span class="marquee-item">VIDEO</span>
+            <span class="marquee-sep">✦</span>
+            <span class="marquee-item">PHOTO</span>
+            <span class="marquee-sep">✦</span>
+            <span class="marquee-item">DESIGN</span>
+            <span class="marquee-sep">✦</span>
+            <span class="marquee-item">VIDEO</span>
+            <span class="marquee-sep">✦</span>
+            <span class="marquee-item">PHOTO</span>
+            <span class="marquee-sep">✦</span>
+            <span class="marquee-item">DESIGN</span>
+            <span class="marquee-sep">✦</span>
+        </div>
+    </div>
+
     <!-- ========== SERVICES ========== -->
     <section id="services">
         <div class="section-header">
-            <span class="section-label">What We Do</span>
-            <h2 class="section-title">SERVICES</h2>
+            <span class="section-label" data-reveal>What We Do</span>
+            <h2 class="section-title" data-split-text>SERVICES</h2>
         </div>
 
         <div class="services-grid">
             <!-- Videography -->
-            <article class="service-card" id="service-video">
+            <article class="service-card" id="service-video" data-tilt>
                 <div class="service-img-wrap">
                     <img src="images/videography.png" alt="Professional Videography" loading="lazy">
-                    <div class="dither-overlay"></div>
+                    <div class="service-img-overlay"></div>
                     <span class="service-number">01</span>
                 </div>
                 <div class="service-body">
                     <h3 class="service-name">Videography</h3>
                     <p class="service-desc">Cinematic storytelling crafted with precision. From brand films to music
                         videos, we create visual narratives that move audiences and elevate your vision.</p>
-                    <a href="#work" class="service-link">
+                    <a href="#work" class="service-link" data-magnetic>
                         <span>See the reel</span>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
@@ -157,17 +204,17 @@
             </article>
 
             <!-- Photography -->
-            <article class="service-card" id="service-photo">
+            <article class="service-card" id="service-photo" data-tilt>
                 <div class="service-img-wrap">
                     <img src="images/photography.png" alt="Professional Photography" loading="lazy">
-                    <div class="dither-overlay"></div>
+                    <div class="service-img-overlay"></div>
                     <span class="service-number">02</span>
                 </div>
                 <div class="service-body">
                     <h3 class="service-name">Photography</h3>
                     <p class="service-desc">Every frame tells a story. We capture raw, unfiltered moments with dramatic
                         lighting and bold composition that commands attention.</p>
-                    <a href="#work" class="service-link">
+                    <a href="#work" class="service-link" data-magnetic>
                         <span>See the shots</span>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
@@ -178,17 +225,17 @@
             </article>
 
             <!-- Web Design -->
-            <article class="service-card" id="service-web">
+            <article class="service-card" id="service-web" data-tilt>
                 <div class="service-img-wrap">
                     <img src="images/webdesign.png" alt="Web Design" loading="lazy">
-                    <div class="dither-overlay"></div>
+                    <div class="service-img-overlay"></div>
                     <span class="service-number">03</span>
                 </div>
                 <div class="service-body">
                     <h3 class="service-name">Web Design</h3>
                     <p class="service-desc">Websites that don't just look good — they feel alive. Custom-coded,
                         animated, immersive digital experiences that set you apart.</p>
-                    <a href="#contact" class="service-link">
+                    <a href="#contact" class="service-link" data-magnetic>
                         <span>Start a project</span>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
@@ -200,112 +247,123 @@
         </div>
     </section>
 
-    <!-- ========== PORTFOLIO / WORK ========== -->
+    <!-- ========== PORTFOLIO — HORIZONTAL SCROLL ========== -->
     <section id="work">
         <div class="section-header">
-            <span class="section-label">Selected Projects</span>
-            <h2 class="section-title">WORK</h2>
+            <span class="section-label" data-reveal>Selected Projects</span>
+            <h2 class="section-title" data-split-text>WORK</h2>
         </div>
 
-        <div class="portfolio-grid">
-            <div class="portfolio-item portfolio-wide" data-category="video">
-                <div class="portfolio-img-wrap">
-                    <img src="images/videography.png" alt="Cinematic Brand Film" loading="lazy">
-                    <div class="dither-overlay"></div>
+        <div class="portfolio-horizontal-wrap">
+            <div class="portfolio-track">
+                <div class="portfolio-card" data-category="video">
+                    <div class="portfolio-card-img">
+                        <img src="images/videography.png" alt="Cinematic Brand Film" loading="lazy">
+                    </div>
+                    <div class="portfolio-card-info">
+                        <span class="portfolio-cat">Videography</span>
+                        <h4 class="portfolio-title">Cinematic Brand Film</h4>
+                        <p class="portfolio-excerpt">A full-scale brand narrative for a luxury automotive campaign, shot
+                            on RED with anamorphic lenses.</p>
+                    </div>
                 </div>
-                <div class="portfolio-info">
-                    <span class="portfolio-cat">Videography</span>
-                    <h4 class="portfolio-title">Cinematic Brand Film</h4>
-                </div>
-            </div>
 
-            <div class="portfolio-item" data-category="photo">
-                <div class="portfolio-img-wrap">
-                    <img src="images/portfolio-fashion.png" alt="Editorial Series" loading="lazy">
-                    <div class="dither-overlay"></div>
+                <div class="portfolio-card" data-category="photo">
+                    <div class="portfolio-card-img">
+                        <img src="images/portfolio-fashion.png" alt="Editorial Series" loading="lazy">
+                    </div>
+                    <div class="portfolio-card-info">
+                        <span class="portfolio-cat">Photography</span>
+                        <h4 class="portfolio-title">Editorial Series</h4>
+                        <p class="portfolio-excerpt">High-fashion editorial spread with dramatic studio lighting and
+                            bold conceptual styling.</p>
+                    </div>
                 </div>
-                <div class="portfolio-info">
-                    <span class="portfolio-cat">Photography</span>
-                    <h4 class="portfolio-title">Editorial Series</h4>
-                </div>
-            </div>
 
-            <div class="portfolio-item" data-category="photo">
-                <div class="portfolio-img-wrap">
-                    <img src="images/portfolio-landscape.png" alt="Wilderness Collection" loading="lazy">
-                    <div class="dither-overlay"></div>
+                <div class="portfolio-card" data-category="photo">
+                    <div class="portfolio-card-img">
+                        <img src="images/portfolio-landscape.png" alt="Wilderness Collection" loading="lazy">
+                    </div>
+                    <div class="portfolio-card-info">
+                        <span class="portfolio-cat">Photography</span>
+                        <h4 class="portfolio-title">Wilderness Collection</h4>
+                        <p class="portfolio-excerpt">Landscape photography capturing the raw beauty of untouched
+                            wilderness across three continents.</p>
+                    </div>
                 </div>
-                <div class="portfolio-info">
-                    <span class="portfolio-cat">Photography</span>
-                    <h4 class="portfolio-title">Wilderness Collection</h4>
-                </div>
-            </div>
 
-            <div class="portfolio-item portfolio-wide" data-category="photo">
-                <div class="portfolio-img-wrap">
-                    <img src="images/portfolio-urban.png" alt="Urban Nights" loading="lazy">
-                    <div class="dither-overlay"></div>
+                <div class="portfolio-card" data-category="photo">
+                    <div class="portfolio-card-img">
+                        <img src="images/portfolio-urban.png" alt="Urban Nights" loading="lazy">
+                    </div>
+                    <div class="portfolio-card-info">
+                        <span class="portfolio-cat">Photography</span>
+                        <h4 class="portfolio-title">Urban Nights</h4>
+                        <p class="portfolio-excerpt">Street photography series exploring neon-lit cityscapes and human
+                            stories after dark.</p>
+                    </div>
                 </div>
-                <div class="portfolio-info">
-                    <span class="portfolio-cat">Photography</span>
-                    <h4 class="portfolio-title">Urban Nights</h4>
-                </div>
-            </div>
 
-            <div class="portfolio-item" data-category="web">
-                <div class="portfolio-img-wrap">
-                    <img src="images/webdesign.png" alt="Agency Website Redesign" loading="lazy">
-                    <div class="dither-overlay"></div>
+                <div class="portfolio-card" data-category="web">
+                    <div class="portfolio-card-img">
+                        <img src="images/webdesign.png" alt="Agency Website Redesign" loading="lazy">
+                    </div>
+                    <div class="portfolio-card-info">
+                        <span class="portfolio-cat">Web Design</span>
+                        <h4 class="portfolio-title">Agency Redesign</h4>
+                        <p class="portfolio-excerpt">Full custom website with GSAP animations, 3D effects, and a bespoke
+                            design system.</p>
+                    </div>
                 </div>
-                <div class="portfolio-info">
-                    <span class="portfolio-cat">Web Design</span>
-                    <h4 class="portfolio-title">Agency Redesign</h4>
-                </div>
-            </div>
 
-            <div class="portfolio-item" data-category="photo">
-                <div class="portfolio-img-wrap">
-                    <img src="images/photography.png" alt="Portrait Study" loading="lazy">
-                    <div class="dither-overlay"></div>
-                </div>
-                <div class="portfolio-info">
-                    <span class="portfolio-cat">Photography</span>
-                    <h4 class="portfolio-title">Portrait Study</h4>
+                <div class="portfolio-card" data-category="photo">
+                    <div class="portfolio-card-img">
+                        <img src="images/photography.png" alt="Portrait Study" loading="lazy">
+                    </div>
+                    <div class="portfolio-card-info">
+                        <span class="portfolio-cat">Photography</span>
+                        <h4 class="portfolio-title">Portrait Study</h4>
+                        <p class="portfolio-excerpt">Intimate portrait series using natural light and environmental
+                            storytelling.</p>
+                    </div>
                 </div>
             </div>
+        </div>
+
+        <div class="portfolio-progress">
+            <div class="portfolio-progress-bar"></div>
         </div>
     </section>
-
-    <!-- ========== LIGHTBOX ========== -->
-    <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
-        <button class="lightbox-close" aria-label="Close">&times;</button>
-        <img class="lightbox-img" src="" alt="Enlarged portfolio image">
-    </div>
 
     <!-- ========== ABOUT ========== -->
     <section id="about">
         <div class="about-layout">
             <div class="about-text-col">
-                <span class="section-label">Who We Are</span>
-                <h2 class="section-title about-title">ABOUT<br>WFILMS</h2>
-                <p class="about-lead">We don't just create content — we build <em>experiences</em>. WFILMS is a media
-                    production studio driven by bold vision, aggressive aesthetics, and a relentless pursuit of
+                <span class="section-label" data-reveal>Who We Are</span>
+                <h2 class="section-title about-title" data-split-text>ABOUT<br>WFILMS</h2>
+                <p class="about-lead" data-reveal>We don't just create content — we build <em>experiences</em>. WFILMS
+                    is a media production studio driven by bold vision, aggressive aesthetics, and a relentless pursuit
+                    of
                     cinematic excellence.</p>
-                <p class="about-body">From nailing that perfect shot in the golden hour to engineering pixel-perfect web
-                    experiences, every project gets our full creative intensity. We believe media should be felt, not
-                    just seen.</p>
+                <p class="about-body" data-reveal>From nailing that perfect shot in the golden hour to engineering
+                    pixel-perfect web experiences, every project gets our full creative intensity. We believe media
+                    should
+                    be felt, not just seen.</p>
             </div>
             <div class="about-stats-col">
                 <div class="stat-item">
                     <span class="stat-number" data-count="150">0</span>
+                    <span class="stat-plus">+</span>
                     <span class="stat-label">Projects Delivered</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-number" data-count="50">0</span>
+                    <span class="stat-plus">+</span>
                     <span class="stat-label">Happy Clients</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-number" data-count="5">0</span>
+                    <span class="stat-plus">+</span>
                     <span class="stat-label">Years of Craft</span>
                 </div>
             </div>
@@ -322,15 +380,48 @@
         </div>
     </section>
 
+    <!-- ========== SECOND MARQUEE ========== -->
+    <div class="marquee-section marquee-reverse" aria-hidden="true">
+        <div class="marquee-track">
+            <span class="marquee-item">CINEMATIC</span>
+            <span class="marquee-sep">◆</span>
+            <span class="marquee-item">BOLD</span>
+            <span class="marquee-sep">◆</span>
+            <span class="marquee-item">IMMERSIVE</span>
+            <span class="marquee-sep">◆</span>
+            <span class="marquee-item">CINEMATIC</span>
+            <span class="marquee-sep">◆</span>
+            <span class="marquee-item">BOLD</span>
+            <span class="marquee-sep">◆</span>
+            <span class="marquee-item">IMMERSIVE</span>
+            <span class="marquee-sep">◆</span>
+            <span class="marquee-item">CINEMATIC</span>
+            <span class="marquee-sep">◆</span>
+            <span class="marquee-item">BOLD</span>
+            <span class="marquee-sep">◆</span>
+            <span class="marquee-item">IMMERSIVE</span>
+            <span class="marquee-sep">◆</span>
+            <span class="marquee-item">CINEMATIC</span>
+            <span class="marquee-sep">◆</span>
+            <span class="marquee-item">BOLD</span>
+            <span class="marquee-sep">◆</span>
+            <span class="marquee-item">IMMERSIVE</span>
+            <span class="marquee-sep">◆</span>
+        </div>
+    </div>
+
     <!-- ========== CONTACT ========== -->
     <section id="contact">
+        <div class="contact-watermark" aria-hidden="true">LET'S TALK</div>
         <div class="contact-layout">
             <div class="contact-text-col">
-                <span class="section-label">Get In Touch</span>
-                <h2 class="section-title">LET'S<br>WORK<br>TOGETHER</h2>
-                <p class="contact-lead">Have a project in mind? Let's create something raw and unforgettable.</p>
+                <span class="section-label" data-reveal>Get In Touch</span>
+                <h2 class="section-title" data-split-text>LET'S<br>WORK<br>TOGETHER</h2>
+                <p class="contact-lead" data-reveal>Have a project in mind? Let's create something raw and
+                    unforgettable.</p>
                 <div class="contact-details">
-                    <a href="mailto:wollenburgfilms@gmail.com" class="contact-link">wollenburgfilms@gmail.com</a>
+                    <a href="mailto:wollenburgfilms@gmail.com" class="contact-link"
+                        data-magnetic>wollenburgfilms@gmail.com</a>
                 </div>
             </div>
             <div class="contact-form-col">
@@ -361,7 +452,7 @@
                         <label for="form-message">Tell us about your project</label>
                         <div class="form-line"></div>
                     </div>
-                    <button type="submit" class="form-submit">
+                    <button type="submit" class="form-submit" data-magnetic>
                         <span>Send Message</span>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
@@ -381,20 +472,20 @@
                 <span class="footer-brand">WFILMS</span>
             </div>
             <div class="footer-links">
-                <a href="#services">Services</a>
-                <a href="#work">Work</a>
-                <a href="#about">About</a>
-                <a href="#contact">Contact</a>
+                <a href="#services" data-magnetic>Services</a>
+                <a href="#work" data-magnetic>Work</a>
+                <a href="#about" data-magnetic>About</a>
+                <a href="#contact" data-magnetic>Contact</a>
             </div>
         </div>
         <div class="footer-bottom">
             <p>&copy; 2026 WFILMS. All rights reserved.</p>
-            <span class="footer-tagline">VIDEO, PHOTO, DESIGN</span>
+            <span class="footer-tagline">VIDEO • PHOTO • DESIGN</span>
         </div>
     </footer>
 
     <!-- ========== BACK TO TOP ========== -->
-    <button id="back-to-top" class="back-to-top" aria-label="Back to top">
+    <button id="back-to-top" class="back-to-top" aria-label="Back to top" data-magnetic>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M12 19V5M5 12l7-7 7 7" />
         </svg>
