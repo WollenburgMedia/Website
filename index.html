@@ -176,6 +176,27 @@
         </div>
     </section>
 
+    <!-- ========== VIDEO SHOWREEL HERO ========== -->
+    <section id="showreel">
+        <div class="showreel-overlay"></div>
+        <video class="showreel-video" autoplay muted loop playsinline preload="metadata"
+            poster="images/videography.png">
+            <source src="images/showreel.mp4" type="video/mp4">
+        </video>
+        <div class="showreel-content">
+            <span class="showreel-label">Watch Our Highlights</span>
+            <h2 class="showreel-title" data-split-text>SHOWREEL</h2>
+            <p class="showreel-sub">A glimpse into the work that defines us.</p>
+            <button class="showreel-play-btn" id="showreel-play" aria-label="Play showreel">
+                <svg viewBox="0 0 80 80" width="80" height="80">
+                    <circle cx="40" cy="40" r="38" fill="none" stroke="currentColor" stroke-width="2" />
+                    <polygon points="32,24 58,40 32,56" fill="currentColor" />
+                </svg>
+                <span>Play Reel</span>
+            </button>
+        </div>
+    </section>
+
     <!-- ========== INFINITE MARQUEE ========== -->
     <div class="marquee-section" aria-hidden="true">
         <div class="marquee-track">
@@ -284,9 +305,16 @@
         </div>
 
         <div class="portfolio-showcase">
-            <div class="portfolio-item" data-category="video">
+            <div class="portfolio-item" data-category="video" data-type="video" data-media-src="images/showreel.mp4">
                 <div class="portfolio-item-img">
                     <img src="images/videography.png" alt="Cinematic Brand Film" loading="lazy">
+                    <div class="portfolio-hover-indicator">
+                        <svg viewBox="0 0 48 48" width="48" height="48">
+                            <circle cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" />
+                            <polygon points="20,16 36,24 20,32" fill="currentColor" />
+                        </svg>
+                        <span>Play Video</span>
+                    </div>
                 </div>
                 <div class="portfolio-item-content">
                     <span class="portfolio-cat">Videography</span>
@@ -296,9 +324,18 @@
                 </div>
             </div>
 
-            <div class="portfolio-item" data-category="photo">
+            <div class="portfolio-item" data-category="photo" data-type="photo"
+                data-media-src="images/portfolio-fashion.png">
                 <div class="portfolio-item-img">
                     <img src="images/portfolio-fashion.png" alt="Editorial Series" loading="lazy">
+                    <div class="portfolio-hover-indicator">
+                        <svg viewBox="0 0 48 48" width="48" height="48">
+                            <circle cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" />
+                            <line x1="24" y1="14" x2="24" y2="34" stroke="currentColor" stroke-width="2" />
+                            <line x1="14" y1="24" x2="34" y2="24" stroke="currentColor" stroke-width="2" />
+                        </svg>
+                        <span>View Photo</span>
+                    </div>
                 </div>
                 <div class="portfolio-item-content">
                     <span class="portfolio-cat">Photography</span>
@@ -308,9 +345,18 @@
                 </div>
             </div>
 
-            <div class="portfolio-item" data-category="photo">
+            <div class="portfolio-item" data-category="photo" data-type="photo"
+                data-media-src="images/portfolio-landscape.png">
                 <div class="portfolio-item-img">
                     <img src="images/portfolio-landscape.png" alt="Wilderness Collection" loading="lazy">
+                    <div class="portfolio-hover-indicator">
+                        <svg viewBox="0 0 48 48" width="48" height="48">
+                            <circle cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" />
+                            <line x1="24" y1="14" x2="24" y2="34" stroke="currentColor" stroke-width="2" />
+                            <line x1="14" y1="24" x2="34" y2="24" stroke="currentColor" stroke-width="2" />
+                        </svg>
+                        <span>View Photo</span>
+                    </div>
                 </div>
                 <div class="portfolio-item-content">
                     <span class="portfolio-cat">Photography</span>
@@ -320,9 +366,18 @@
                 </div>
             </div>
 
-            <div class="portfolio-item" data-category="photo">
+            <div class="portfolio-item" data-category="photo" data-type="photo"
+                data-media-src="images/portfolio-urban.png">
                 <div class="portfolio-item-img">
                     <img src="images/portfolio-urban.png" alt="Urban Nights" loading="lazy">
+                    <div class="portfolio-hover-indicator">
+                        <svg viewBox="0 0 48 48" width="48" height="48">
+                            <circle cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" />
+                            <line x1="24" y1="14" x2="24" y2="34" stroke="currentColor" stroke-width="2" />
+                            <line x1="14" y1="24" x2="34" y2="24" stroke="currentColor" stroke-width="2" />
+                        </svg>
+                        <span>View Photo</span>
+                    </div>
                 </div>
                 <div class="portfolio-item-content">
                     <span class="portfolio-cat">Photography</span>
@@ -332,9 +387,17 @@
                 </div>
             </div>
 
-            <div class="portfolio-item" data-category="web">
+            <div class="portfolio-item" data-category="web" data-type="photo" data-media-src="images/webdesign.png">
                 <div class="portfolio-item-img">
                     <img src="images/webdesign.png" alt="Agency Website Redesign" loading="lazy">
+                    <div class="portfolio-hover-indicator">
+                        <svg viewBox="0 0 48 48" width="48" height="48">
+                            <circle cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" />
+                            <line x1="24" y1="14" x2="24" y2="34" stroke="currentColor" stroke-width="2" />
+                            <line x1="14" y1="24" x2="34" y2="24" stroke="currentColor" stroke-width="2" />
+                        </svg>
+                        <span>View Project</span>
+                    </div>
                 </div>
                 <div class="portfolio-item-content">
                     <span class="portfolio-cat">Web Design</span>
@@ -344,9 +407,17 @@
                 </div>
             </div>
 
-            <div class="portfolio-item" data-category="photo">
+            <div class="portfolio-item" data-category="photo" data-type="photo" data-media-src="images/photography.png">
                 <div class="portfolio-item-img">
                     <img src="images/photography.png" alt="Portrait Study" loading="lazy">
+                    <div class="portfolio-hover-indicator">
+                        <svg viewBox="0 0 48 48" width="48" height="48">
+                            <circle cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" />
+                            <line x1="24" y1="14" x2="24" y2="34" stroke="currentColor" stroke-width="2" />
+                            <line x1="14" y1="24" x2="34" y2="24" stroke="currentColor" stroke-width="2" />
+                        </svg>
+                        <span>View Photo</span>
+                    </div>
                 </div>
                 <div class="portfolio-item-content">
                     <span class="portfolio-cat">Photography</span>
@@ -457,15 +528,21 @@
                         <label for="form-email">Email Address</label>
                         <div class="form-line"></div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group form-group-select">
                         <select id="form-service" name="service" required>
-                            <option value="" disabled selected>Select a service</option>
+                            <option value="" disabled selected hidden></option>
                             <option value="videography">Videography</option>
                             <option value="photography">Photography</option>
                             <option value="web-design">Web Design</option>
                             <option value="full-package">Full Package</option>
                         </select>
-                        <label for="form-service">Service</label>
+                        <label for="form-service" class="select-label">Service</label>
+                        <div class="select-arrow" aria-hidden="true">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M6 9l6 6 6-6" />
+                            </svg>
+                        </div>
                         <div class="form-line"></div>
                     </div>
                     <div class="form-group">
@@ -480,6 +557,8 @@
                             <path d="M5 12h14M12 5l7 7-7 7" />
                         </svg>
                     </button>
+                    <input type="text" name="honeypot" class="form-honeypot" tabindex="-1" autocomplete="off">
+                    <div class="form-status" id="form-status" role="alert" aria-live="polite"></div>
                 </form>
             </div>
         </div>
@@ -504,6 +583,20 @@
             <span class="footer-tagline">VIDEO • PHOTO • DESIGN</span>
         </div>
     </footer>
+
+    <!-- ========== PORTFOLIO LIGHTBOX ========== -->
+    <div id="portfolio-lightbox" class="lightbox" aria-hidden="true" role="dialog">
+        <div class="lightbox-backdrop"></div>
+        <button class="lightbox-close" aria-label="Close lightbox">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+        </button>
+        <div class="lightbox-content">
+            <img class="lightbox-img" src="" alt="Portfolio full view" style="display:none;">
+            <video class="lightbox-video" controls style="display:none;"></video>
+        </div>
+    </div>
 
     <!-- ========== BACK TO TOP ========== -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top" data-magnetic>

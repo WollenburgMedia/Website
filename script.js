@@ -482,6 +482,25 @@ document.addEventListener('DOMContentLoaded', () => {
             scrollTrigger: { trigger: '.contact-lead', start: 'top 85%', toggleActions: 'play none none none' }
         });
 
+        // Showreel section
+        gsap.to('.showreel-label', {
+            opacity: 1, y: 0,
+            duration: 0.8, ease: 'power2.out',
+            scrollTrigger: { trigger: '#showreel', start: 'top 60%', toggleActions: 'play none none none' }
+        });
+
+        gsap.to('.showreel-sub', {
+            opacity: 1, y: 0,
+            duration: 0.8, ease: 'power2.out', delay: 0.2,
+            scrollTrigger: { trigger: '#showreel', start: 'top 60%', toggleActions: 'play none none none' }
+        });
+
+        gsap.to('.showreel-play-btn', {
+            opacity: 1, y: 0,
+            duration: 0.8, ease: 'power2.out', delay: 0.4,
+            scrollTrigger: { trigger: '#showreel', start: 'top 60%', toggleActions: 'play none none none' }
+        });
+
         initCounters();
     }
 
@@ -578,6 +597,7 @@ document.addEventListener('DOMContentLoaded', () => {
         navToggle.addEventListener('click', () => {
             navToggle.classList.toggle('active');
             navMenu.classList.toggle('open');
+            document.body.classList.toggle('menu-open');
             navToggle.setAttribute('aria-expanded',
                 navToggle.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
         });
@@ -586,6 +606,7 @@ document.addEventListener('DOMContentLoaded', () => {
             link.addEventListener('click', () => {
                 navToggle.classList.remove('active');
                 navMenu.classList.remove('open');
+                document.body.classList.remove('menu-open');
                 navToggle.setAttribute('aria-expanded', 'false');
             });
         });
@@ -623,26 +644,117 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* ==========================================================
-       16. CONTACT FORM
+       16. CONTACT FORM — Google Sheets Submission
        ========================================================== */
+    // Replace this URL with your deployed Google Apps Script Web App URL
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGDGHwtrCQQaJFETke-VBA7XyclsIRDnhLeRTAjMc1LPiMa-dLpuvZSIN1YWS1g4-ZkA/exec';
+
     const form = document.getElementById('contact-form');
+    const formStatus = document.getElementById('form-status');
+
     if (form) {
-        form.addEventListener('submit', (e) => {
+        // Select element: add has-value class when a real option is selected
+        const selectEl = document.getElementById('form-service');
+        if (selectEl) {
+            selectEl.addEventListener('change', () => {
+                if (selectEl.value) {
+                    selectEl.classList.add('has-value');
+                } else {
+                    selectEl.classList.remove('has-value');
+                }
+            });
+        }
+
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            // Honeypot check
+            const honeypot = form.querySelector('[name="honeypot"]');
+            if (honeypot && honeypot.value) return;
+
             const btn = form.querySelector('.form-submit span');
             const submitBtn = form.querySelector('.form-submit');
             const originalText = btn.textContent;
 
-            btn.textContent = 'Sent!';
-            gsap.to(submitBtn, { borderColor: '#C41E3A', duration: 0.3 });
-            gsap.to(btn, { color: '#C41E3A', duration: 0.3 });
+            // Collect form data
+            const formData = {
+                name: form.querySelector('[name="name"]').value.trim(),
+                email: form.querySelector('[name="email"]').value.trim(),
+                service: form.querySelector('[name="service"]').value,
+                message: form.querySelector('[name="message"]').value.trim()
+            };
 
+            // Basic validation
+            if (!formData.name || !formData.email || !formData.service || !formData.message) {
+                formStatus.textContent = 'Please fill in all fields.';
+                formStatus.className = 'form-status error';
+                return;
+            }
+
+            // Loading state
+            btn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+            formStatus.textContent = 'Submitting your message...';
+            formStatus.className = 'form-status loading';
+
+            // If Google Script URL is configured, POST to it
+            if (GOOGLE_SCRIPT_URL) {
+                try {
+                    // Use FormData — no-cors strips Content-Type headers,
+                    // so we can't send JSON. FormData works with Apps Script's e.parameter
+                    const submitData = new FormData();
+                    submitData.append('name', formData.name);
+                    submitData.append('email', formData.email);
+                    submitData.append('service', formData.service);
+                    submitData.append('message', formData.message);
+
+                    const response = await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        body: submitData
+                    });
+
+                    // no-cors mode returns opaque response, so we assume success
+                    btn.textContent = 'Sent!';
+                    gsap.to(submitBtn, { borderColor: '#2ecc71', duration: 0.3 });
+                    gsap.to(btn, { color: '#2ecc71', duration: 0.3 });
+                    formStatus.textContent = 'Message sent successfully! We\'ll be in touch soon.';
+                    formStatus.className = 'form-status success';
+                    form.reset();
+                    if (selectEl) selectEl.classList.remove('has-value');
+                } catch (err) {
+                    btn.textContent = 'Error';
+                    gsap.to(submitBtn, { borderColor: '#C41E3A', duration: 0.3 });
+                    gsap.to(btn, { color: '#C41E3A', duration: 0.3 });
+                    formStatus.textContent = 'Something went wrong. Please try again or email us directly.';
+                    formStatus.className = 'form-status error';
+                }
+            } else {
+                // Fallback: open mailto link with form data
+                const subject = encodeURIComponent(`New inquiry from ${formData.name} — ${formData.service}`);
+                const body = encodeURIComponent(
+                    `Name: ${formData.name}\nEmail: ${formData.email}\nService: ${formData.service}\n\nMessage:\n${formData.message}`
+                );
+                window.location.href = `mailto:wollenburgfilms@gmail.com?subject=${subject}&body=${body}`;
+
+                btn.textContent = 'Sent!';
+                gsap.to(submitBtn, { borderColor: '#2ecc71', duration: 0.3 });
+                gsap.to(btn, { color: '#2ecc71', duration: 0.3 });
+                formStatus.textContent = 'Opening your email client...';
+                formStatus.className = 'form-status success';
+                form.reset();
+                if (selectEl) selectEl.classList.remove('has-value');
+            }
+
+            // Reset button after delay
             setTimeout(() => {
                 btn.textContent = originalText;
                 gsap.to(btn, { color: '', duration: 0.3 });
                 gsap.to(submitBtn, { borderColor: '', duration: 0.3 });
-                form.reset();
-            }, 2500);
+                submitBtn.disabled = false;
+                formStatus.textContent = '';
+                formStatus.className = 'form-status';
+            }, 4000);
         });
     }
 
@@ -700,6 +812,104 @@ document.addEventListener('DOMContentLoaded', () => {
             item.addEventListener('mouseleave', () => {
                 gsap.to(img, { x: 0, y: 0, duration: 0.8, ease: 'power2.out' });
             });
+        });
+    }
+
+    /* ==========================================================
+       20. PORTFOLIO LIGHTBOX
+       ========================================================== */
+    const lightbox = document.getElementById('portfolio-lightbox');
+    const lightboxImg = lightbox ? lightbox.querySelector('.lightbox-img') : null;
+    const lightboxVideo = lightbox ? lightbox.querySelector('.lightbox-video') : null;
+    const lightboxClose = lightbox ? lightbox.querySelector('.lightbox-close') : null;
+    const lightboxBackdrop = lightbox ? lightbox.querySelector('.lightbox-backdrop') : null;
+
+    function openLightbox(type, src) {
+        if (!lightbox) return;
+
+        // Hide both, then show the right one
+        lightboxImg.style.display = 'none';
+        lightboxVideo.style.display = 'none';
+
+        if (type === 'video') {
+            lightboxVideo.src = src;
+            lightboxVideo.style.display = 'block';
+            lightboxVideo.play();
+        } else {
+            lightboxImg.src = src;
+            lightboxImg.style.display = 'block';
+        }
+
+        lightbox.classList.add('active');
+        lightbox.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        if (!lightbox) return;
+
+        lightbox.classList.remove('active');
+        lightbox.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+
+        // Stop video if playing
+        if (lightboxVideo) {
+            lightboxVideo.pause();
+            lightboxVideo.src = '';
+        }
+    }
+
+    // Click on portfolio items to open lightbox
+    document.querySelectorAll('.portfolio-item[data-type]').forEach(item => {
+        item.addEventListener('click', () => {
+            const type = item.getAttribute('data-type');
+            const src = item.getAttribute('data-media-src');
+            if (type && src) openLightbox(type, src);
+        });
+    });
+
+    // Close lightbox
+    if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+    if (lightboxBackdrop) lightboxBackdrop.addEventListener('click', closeLightbox);
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && lightbox && lightbox.classList.contains('active')) {
+            closeLightbox();
+        }
+    });
+
+    /* ==========================================================
+       21. SHOWREEL PLAY BUTTON
+       ========================================================== */
+    const showreelPlayBtn = document.getElementById('showreel-play');
+    const showreelVideo = document.querySelector('.showreel-video');
+
+    if (showreelPlayBtn && showreelVideo) {
+        showreelPlayBtn.addEventListener('click', () => {
+            // Unmute and try fullscreen
+            showreelVideo.muted = false;
+            showreelVideo.currentTime = 0;
+            showreelVideo.play();
+
+            // Request fullscreen
+            if (showreelVideo.requestFullscreen) {
+                showreelVideo.requestFullscreen();
+            } else if (showreelVideo.webkitRequestFullscreen) {
+                showreelVideo.webkitRequestFullscreen();
+            } else if (showreelVideo.webkitEnterFullScreen) {
+                showreelVideo.webkitEnterFullScreen();
+            }
+        });
+
+        // Re-mute when exiting fullscreen
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) {
+                showreelVideo.muted = true;
+            }
+        });
+        document.addEventListener('webkitfullscreenchange', () => {
+            if (!document.webkitFullscreenElement) {
+                showreelVideo.muted = true;
+            }
         });
     }
 
