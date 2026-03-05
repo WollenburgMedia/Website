@@ -154,18 +154,67 @@
         </div>
     </div>
 
-    <!-- ========== CTA ========== -->
-    <div class="service-cta-section">
-        <h2 class="service-cta-title">START YOUR VIDEO PROJECT</h2>
-        <p class="service-cta-text">Have a concept in mind? Let's bring it to life with cinematic quality that commands
-            attention.</p>
-        <a href="index.html#contact" class="service-cta-btn">
-            <span>Get in Touch</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-        </a>
-    </div>
+    <!-- ========== CONTACT ========== -->
+    <section id="contact">
+        <div class="contact-bg-text" aria-hidden="true">LET'S TALK</div>
+        <div class="contact-layout">
+            <div class="contact-text-col">
+                <span class="section-label">Get In Touch</span>
+                <h2 class="section-title" style="font-size: clamp(2.5rem, 6vw, 5rem);">START YOUR<br>VIDEO<br>PROJECT
+                </h2>
+                <p class="contact-lead">Have a concept in mind? Let's bring it to life with cinematic quality that
+                    commands attention.</p>
+                <div class="contact-details">
+                    <a href="mailto:wollenburgfilms@gmail.com" class="contact-link">wollenburgfilms@gmail.com</a>
+                </div>
+            </div>
+            <div class="contact-form-col">
+                <form class="contact-form" id="contact-form" novalidate>
+                    <div class="form-group">
+                        <input type="text" id="form-name" name="name" required placeholder=" " autocomplete="name">
+                        <label for="form-name">Your Name</label>
+                        <div class="form-line"></div>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="form-email" name="email" required placeholder=" " autocomplete="email">
+                        <label for="form-email">Email Address</label>
+                        <div class="form-line"></div>
+                    </div>
+                    <div class="form-group form-group-select">
+                        <select id="form-service" name="service" required>
+                            <option value="" disabled hidden></option>
+                            <option value="videography" selected>Videography</option>
+                            <option value="photography">Photography</option>
+                            <option value="web-design">Web Design</option>
+                            <option value="full-package">Full Package</option>
+                        </select>
+                        <label for="form-service" class="select-label">Service</label>
+                        <div class="select-arrow" aria-hidden="true">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M6 9l6 6 6-6" />
+                            </svg>
+                        </div>
+                        <div class="form-line"></div>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="form-message" name="message" rows="4" required placeholder=" "></textarea>
+                        <label for="form-message">Tell us about your project</label>
+                        <div class="form-line"></div>
+                    </div>
+                    <button type="submit" class="form-submit" id="form-submit">
+                        <span>Send Message</span>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                    <input type="text" name="honeypot" class="form-honeypot" tabindex="-1" autocomplete="off">
+                    <div class="form-status" id="form-status" role="alert" aria-live="polite"></div>
+                </form>
+            </div>
+        </div>
+    </section>
 
     <!-- ========== FOOTER ========== -->
     <footer id="footer">
@@ -290,6 +339,71 @@
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && lightbox && lightbox.classList.contains('active')) closeLightbox();
             });
+
+            // Contact form submission
+            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyy8ZI3rItBS8wOVDvkwslXWVh4YitCvwYvtHpgbWqNBvaFFg_kbrtRVQSwXETnInBQqA/exec';
+            const form = document.getElementById('contact-form');
+            const formStatus = document.getElementById('form-status');
+            if (form) {
+                const selectEl = document.getElementById('form-service');
+                if (selectEl) {
+                    selectEl.classList.add('has-value');
+                    selectEl.addEventListener('change', () => {
+                        if (selectEl.value) selectEl.classList.add('has-value');
+                        else selectEl.classList.remove('has-value');
+                    });
+                }
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const honeypot = form.querySelector('[name="honeypot"]');
+                    if (honeypot && honeypot.value) return;
+                    const btn = form.querySelector('.form-submit span');
+                    const submitBtn = form.querySelector('.form-submit');
+                    const originalText = btn.textContent;
+                    const formData = {
+                        name: form.querySelector('[name="name"]').value.trim(),
+                        email: form.querySelector('[name="email"]').value.trim(),
+                        service: form.querySelector('[name="service"]').value,
+                        message: form.querySelector('[name="message"]').value.trim()
+                    };
+                    if (!formData.name || !formData.email || !formData.service || !formData.message) {
+                        formStatus.textContent = 'Please fill in all fields.';
+                        formStatus.className = 'form-status error';
+                        return;
+                    }
+                    btn.textContent = 'Sending...';
+                    submitBtn.disabled = true;
+                    formStatus.textContent = 'Submitting your message...';
+                    formStatus.className = 'form-status loading';
+                    try {
+                        const submitData = new URLSearchParams();
+                        submitData.append('name', formData.name);
+                        submitData.append('email', formData.email);
+                        submitData.append('service', formData.service);
+                        submitData.append('message', formData.message);
+                        await fetch(GOOGLE_SCRIPT_URL, {
+                            method: 'POST', mode: 'no-cors',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: submitData.toString()
+                        });
+                        btn.textContent = 'Sent!';
+                        formStatus.textContent = 'Message sent successfully! We\'ll be in touch soon.';
+                        formStatus.className = 'form-status success';
+                        form.reset();
+                        if (selectEl) selectEl.classList.remove('has-value');
+                    } catch (err) {
+                        btn.textContent = 'Error';
+                        formStatus.textContent = 'Something went wrong. Please try again or email us directly.';
+                        formStatus.className = 'form-status error';
+                    }
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                        submitBtn.disabled = false;
+                        formStatus.textContent = '';
+                        formStatus.className = 'form-status';
+                    }, 4000);
+                });
+            }
         });
     </script>
 </body>

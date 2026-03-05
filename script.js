@@ -364,23 +364,23 @@ document.addEventListener('DOMContentLoaded', () => {
             duration: 0.8, ease: 'power2.out', delay: 0.1
         });
 
-        // Hero title chars — animate like preloader (all at once with stagger)
+        // Hero title chars — animate like preloader (all at once, no stagger)
         const heroTitleData = splitData.find(d => d.el.classList.contains('hero-title'));
         if (heroTitleData) {
             gsap.to(heroTitleData.chars, {
                 opacity: 1, y: 0, rotateX: 0,
-                duration: 0.6, stagger: 0.04,
-                ease: 'power3.out', delay: 0.2
+                duration: 0.6, stagger: 0,
+                ease: 'back.out(1.7)', delay: 0.2
             });
         }
 
-        // "MEDIA" subtitle chars — same animation, same timing (all at once)
+        // "MEDIA" subtitle chars — same animation, all at once simultaneously
         const heroSubChars = document.querySelectorAll('.hero-sub-char');
         if (heroSubChars.length) {
             gsap.to(heroSubChars, {
                 opacity: 1, y: 0, rotateX: 0,
-                duration: 0.6, stagger: 0.04,
-                ease: 'power3.out', delay: 0.2
+                duration: 0.6, stagger: 0,
+                ease: 'back.out(1.7)', delay: 0.2
             });
         }
 
@@ -552,13 +552,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ==========================================================
-       SERVICE CARD FULL-CLICK NAVIGATION
+       SERVICE CARD FULL-CLICK NAVIGATION — Smooth page transition
        ========================================================== */
+    const pageTransitionOverlay = document.querySelector('.page-transition-overlay');
+
+    function navigateWithTransition(url) {
+        if (!pageTransitionOverlay) {
+            window.location.href = url;
+            return;
+        }
+        // Animate the wipe overlay in
+        gsap.to(pageTransitionOverlay, {
+            clipPath: 'inset(0 0 0 0)',
+            duration: 0.6,
+            ease: 'power3.inOut',
+            onComplete() {
+                window.location.href = url;
+            }
+        });
+    }
+
     document.querySelectorAll('.service-card[data-href]').forEach(card => {
         card.addEventListener('click', (e) => {
             // Don't double-navigate if they clicked the inner <a> link
             if (e.target.closest('a')) return;
-            window.location.href = card.getAttribute('data-href');
+            e.preventDefault();
+            navigateWithTransition(card.getAttribute('data-href'));
         });
     });
 
@@ -594,15 +613,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-
-    /* ==========================================================
-       11b. SERVICE CARD CLICK — Navigate to dedicated page
-       ========================================================== */
-    document.querySelectorAll('.service-card[data-href]').forEach(card => {
-        card.addEventListener('click', () => {
-            window.location.href = card.getAttribute('data-href');
-        });
-    });
 
     /* ==========================================================
        12. NAVBAR
@@ -925,13 +935,25 @@ document.addEventListener('DOMContentLoaded', () => {
        ========================================================== */
     const showreelPlayBtn = document.getElementById('showreel-play');
     const showreelVideo = document.querySelector('.showreel-video');
+    const showreelOverlay = document.querySelector('.showreel-overlay');
+    const showreelContent = document.querySelector('.showreel-content');
 
     if (showreelPlayBtn && showreelVideo) {
         showreelPlayBtn.addEventListener('click', () => {
-            // Unmute and try fullscreen
+            // Unmute and play
             showreelVideo.muted = false;
             showreelVideo.currentTime = 0;
             showreelVideo.play();
+
+            // Fade out the black tint overlay and content
+            if (showreelOverlay) {
+                gsap.to(showreelOverlay, { opacity: 0, duration: 0.6, ease: 'power2.out' });
+            }
+            if (showreelContent) {
+                gsap.to(showreelContent, { opacity: 0, duration: 0.4, ease: 'power2.out', pointerEvents: 'none' });
+            }
+            // Remove the darkening filter from the video
+            gsap.to(showreelVideo, { filter: 'brightness(1) contrast(1)', duration: 0.6, ease: 'power2.out' });
 
             // Request fullscreen
             if (showreelVideo.requestFullscreen) {
@@ -943,16 +965,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Re-mute when exiting fullscreen
-        document.addEventListener('fullscreenchange', () => {
-            if (!document.fullscreenElement) {
-                showreelVideo.muted = true;
+        // Re-mute and restore tint when exiting fullscreen
+        function restoreShowreel() {
+            showreelVideo.muted = true;
+            if (showreelOverlay) {
+                gsap.to(showreelOverlay, { opacity: 1, duration: 0.5, ease: 'power2.inOut' });
             }
+            if (showreelContent) {
+                gsap.to(showreelContent, { opacity: 1, duration: 0.5, ease: 'power2.inOut', pointerEvents: 'auto' });
+            }
+            gsap.to(showreelVideo, { filter: 'brightness(0.5) contrast(1.15)', duration: 0.5, ease: 'power2.inOut' });
+        }
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) restoreShowreel();
         });
         document.addEventListener('webkitfullscreenchange', () => {
-            if (!document.webkitFullscreenElement) {
-                showreelVideo.muted = true;
-            }
+            if (!document.webkitFullscreenElement) restoreShowreel();
         });
     }
 
