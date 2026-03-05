@@ -208,14 +208,17 @@ ul {
 }
 
 .preloader-logo-wrap {
-    width: clamp(60px, 12vw, 100px);
+    width: clamp(80px, 14vw, 120px);
     display: flex;
     justify-content: center;
+    overflow: visible;
+    padding: 4px;
 }
 
 .preloader-logo {
     width: 100%;
     height: auto;
+    overflow: visible;
 }
 
 /* Character-by-character text reveal */
@@ -1301,6 +1304,414 @@ section {
 .lightbox.active .lightbox-content img,
 .lightbox.active .lightbox-content video {
     transform: scale(1);
+}
+
+/* Lightbox info panel */
+.lightbox-info {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    text-align: center;
+    max-width: 600px;
+    padding: 1.5rem 2rem;
+    background: rgba(10, 10, 10, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.lightbox-title {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    letter-spacing: 0.1em;
+    color: var(--pure-white);
+    margin-bottom: 0.5rem;
+}
+
+.lightbox-desc {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text);
+}
+
+/* ======================================================
+   SERVICE PAGES — Shared Styles
+   ====================================================== */
+.service-page-hero {
+    position: relative;
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--deep);
+}
+
+.service-page-hero-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(0.4) brightness(0.35) contrast(1.2);
+}
+
+.service-page-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(5, 5, 5, 0.5) 0%, rgba(5, 5, 5, 0.8) 100%);
+    z-index: 1;
+}
+
+.service-page-hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 0 2rem;
+}
+
+.service-page-label {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.service-page-title {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 10vw, 8rem);
+    color: var(--pure-white);
+    letter-spacing: 0.05em;
+    line-height: 0.9;
+    margin-bottom: 1rem;
+}
+
+.service-page-tagline {
+    font-family: var(--font-body);
+    font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+    color: var(--muted);
+    max-width: 550px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+/* Service page content sections */
+.service-section {
+    padding: var(--section-pad) var(--section-pad-x);
+    position: relative;
+}
+
+.service-section--dark {
+    background: var(--dark);
+}
+
+.service-section--black {
+    background: var(--black);
+}
+
+.service-about {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.service-about-text h2 {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    color: var(--pure-white);
+    letter-spacing: 0.05em;
+    margin-bottom: 1.5rem;
+}
+
+.service-about-text p {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--text);
+    margin-bottom: 1rem;
+}
+
+.service-about-text p strong {
+    color: var(--pure-white);
+}
+
+/* Process / workflow section */
+.service-process {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.process-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.process-step {
+    padding: 2rem;
+    border: 1px solid var(--border);
+    background: var(--card);
+    transition: border-color 0.4s, transform 0.4s var(--ease);
+}
+
+.process-step:hover {
+    border-color: var(--accent-medium);
+    transform: translateY(-4px);
+}
+
+.process-step-num {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    color: var(--accent);
+    opacity: 0.4;
+    line-height: 1;
+    margin-bottom: 1rem;
+}
+
+.process-step h3 {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    letter-spacing: 0.08em;
+    color: var(--pure-white);
+    margin-bottom: 0.75rem;
+}
+
+.process-step p {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--text);
+}
+
+/* Featured projects grid on service pages */
+.service-portfolio {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.service-portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.service-project {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--card);
+    cursor: pointer;
+    transition: border-color 0.4s, box-shadow 0.4s, transform 0.5s var(--ease);
+}
+
+.service-project:hover {
+    border-color: var(--accent-medium);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    transform: translateY(-5px);
+}
+
+.service-project-img {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16 / 10;
+}
+
+.service-project-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s var(--ease), filter 0.6s;
+    filter: grayscale(0.4) contrast(1.05);
+}
+
+.service-project:hover .service-project-img img {
+    transform: scale(1.08);
+    filter: grayscale(0) contrast(1);
+}
+
+.service-project-img::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.7));
+    pointer-events: none;
+}
+
+.service-project-view {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease);
+    pointer-events: none;
+    color: var(--pure-white);
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+}
+
+.service-project:hover .service-project-view {
+    opacity: 1;
+}
+
+.service-project-info {
+    padding: 1.25rem 1.5rem;
+}
+
+.service-project-info h3 {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    letter-spacing: 0.06em;
+    color: var(--pure-white);
+    margin-bottom: 0.4rem;
+    transition: color 0.3s;
+}
+
+.service-project:hover .service-project-info h3 {
+    color: var(--accent);
+}
+
+.service-project-info p {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--muted);
+}
+
+/* Video showcase section for web design page */
+.video-showcase {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.video-showcase-player {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-top: 2rem;
+}
+
+.video-showcase-player video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Service page CTA */
+.service-cta-section {
+    text-align: center;
+    padding: 6rem 2rem;
+    background: var(--deep);
+}
+
+.service-cta-title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 6vw, 4rem);
+    color: var(--pure-white);
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+}
+
+.service-cta-text {
+    font-size: 1.05rem;
+    color: var(--text);
+    max-width: 500px;
+    margin: 0 auto 2rem;
+    line-height: 1.7;
+}
+
+.service-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2.5rem;
+    border: 1px solid var(--border);
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--light);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.4s, color 0.4s;
+    text-decoration: none;
+}
+
+.service-cta-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s var(--ease);
+    z-index: -1;
+}
+
+.service-cta-btn:hover {
+    border-color: var(--accent);
+    color: var(--pure-white);
+}
+
+.service-cta-btn:hover::before {
+    transform: scaleX(1);
+}
+
+/* Back to home link in service pages */
+.service-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-top: 1.5rem;
+    transition: gap 0.3s var(--ease), color 0.3s;
+    text-decoration: none;
+}
+
+.service-back:hover {
+    gap: 1rem;
+    color: var(--pure-white);
+}
+
+/* Responsive for service pages */
+@media (max-width: 768px) {
+    .service-page-hero {
+        min-height: 50vh;
+    }
+
+    .service-about {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .service-portfolio-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .lightbox-info {
+        bottom: 1rem;
+        max-width: 90vw;
+        padding: 1rem;
+    }
 }
 
 /* ======================================================

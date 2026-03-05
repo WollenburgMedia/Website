@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Design — Wollenburg Media</title>
+    <meta name="description"
+        content="Custom web design and development by Wollenburg Media. Immersive, animated, hand-coded websites that feel alive.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- ========== FILM GRAIN ========== -->
+    <div class="grain-overlay" aria-hidden="true"></div>
+
+    <!-- ========== NAVIGATION ========== -->
+    <nav id="navbar" class="scrolled">
+        <a href="index.html" class="nav-logo" aria-label="Wollenburg Media Home">
+            <img src="Branding/W films logo_white.png" alt="Wollenburg Media" width="40" height="40">
+        </a>
+
+        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <ul class="nav-menu" id="nav-menu">
+            <li><a href="index.html#services" class="nav-link">Services</a></li>
+            <li><a href="index.html#work" class="nav-link">Work</a></li>
+            <li><a href="index.html#about" class="nav-link">About</a></li>
+            <li><a href="index.html#contact" class="nav-link">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- ========== HERO ========== -->
+    <section class="service-page-hero">
+        <img src="images/webdesign.png" alt="" class="service-page-hero-bg">
+        <div class="service-page-hero-overlay"></div>
+        <div class="service-page-hero-content">
+            <span class="service-page-label">Our Services</span>
+            <h1 class="service-page-title">WEB DESIGN</h1>
+            <p class="service-page-tagline">Websites that don't just look good — they feel alive. Custom-coded,
+                animated, immersive digital experiences that set you apart.</p>
+            <a href="index.html" class="service-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                <span>Back to Home</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- ========== ABOUT SERVICE ========== -->
+    <div class="service-section service-section--dark">
+        <div class="service-about">
+            <div class="service-about-text">
+                <h2>DIGITAL EXPERIENCES THAT SET YOU APART</h2>
+                <p>We don't use templates. Every website we build is <strong>custom-coded from scratch</strong> —
+                    designed to reflect your brand's personality and engineered to deliver an experience your
+                    competitors can't match.</p>
+                <p>From GSAP animations and 3D scroll effects to custom cursors and cinematic page transitions, our
+                    sites are crafted to make visitors stop, explore, and remember.</p>
+            </div>
+            <div class="service-about-visual">
+                <img src="images/webdesign.png" alt="Web Design"
+                    style="width:100%; border: 1px solid rgba(255,255,255,0.08); filter: grayscale(0.3) contrast(1.1);">
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== PROCESS ========== -->
+    <div class="service-section service-section--black">
+        <div class="service-process">
+            <div class="section-header">
+                <span class="section-label">How We Build</span>
+                <h2 class="section-title" style="font-size: clamp(2.5rem, 6vw, 5rem);">OUR PROCESS</h2>
+            </div>
+            <div class="process-grid">
+                <div class="process-step">
+                    <span class="process-step-num">01</span>
+                    <h3>STRATEGY & DESIGN</h3>
+                    <p>We research your brand, audience, and competitors — then design a concept that's bold,
+                        functional, and impossible to ignore.</p>
+                </div>
+                <div class="process-step">
+                    <span class="process-step-num">02</span>
+                    <h3>DEVELOPMENT</h3>
+                    <p>Hand-coded HTML, CSS, and JavaScript. No bloated page builders. Every line of code is
+                        intentional, performant, and accessible.</p>
+                </div>
+                <div class="process-step">
+                    <span class="process-step-num">03</span>
+                    <h3>ANIMATION & UX</h3>
+                    <p>GSAP scroll animations, parallax effects, micro-interactions, and custom cursors. We make static
+                        content feel cinematic.</p>
+                </div>
+                <div class="process-step">
+                    <span class="process-step-num">04</span>
+                    <h3>LAUNCH & SUPPORT</h3>
+                    <p>Responsive testing, SEO optimization, deployment, and ongoing support. We don't just hand off
+                        code — we make sure it works flawlessly.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== VIDEO SHOWCASE — Lucky Landscapes ========== -->
+    <div class="service-section service-section--dark">
+        <div class="video-showcase">
+            <div class="section-header">
+                <span class="section-label">Project Showcase</span>
+                <h2 class="section-title" style="font-size: clamp(2.5rem, 6vw, 5rem);">LUCKY LANDSCAPES</h2>
+            </div>
+            <p
+                style="text-align: center; color: var(--text); max-width: 600px; margin: -2rem auto 0; line-height: 1.7; font-size: 1rem;">
+                A fully custom website built for Lucky Landscapes — featuring scroll-driven animations, responsive
+                design, and a premium visual identity that matches their brand.
+            </p>
+            <div class="video-showcase-player">
+                <video controls muted playsinline preload="metadata" poster="images/webdesign.png">
+                    <source src="videos/LuckyLandscapesWebsiteShowcase.mp4" type="video/mp4">
+                    Your browser does not support video playback.
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== FEATURED PROJECTS ========== -->
+    <div class="service-section service-section--black">
+        <div class="service-portfolio">
+            <div class="section-header">
+                <span class="section-label">Selected Work</span>
+                <h2 class="section-title" style="font-size: clamp(2.5rem, 6vw, 5rem);">WEB PROJECTS</h2>
+            </div>
+            <div class="service-portfolio-grid">
+                <div class="service-project" data-type="photo" data-media-src="images/webdesign.png"
+                    data-title="Agency Website Redesign"
+                    data-description="Full custom website with GSAP animations, 3D parallax effects, and a bespoke design system built from scratch. Responsive across all devices.">
+                    <div class="service-project-img">
+                        <img src="images/webdesign.png" alt="Agency Website Redesign" loading="lazy">
+                        <div class="service-project-view">⊕ View Full Resolution</div>
+                    </div>
+                    <div class="service-project-info">
+                        <h3>Agency Website Redesign</h3>
+                        <p>Full custom build — GSAP animations, parallax, responsive design system.</p>
+                    </div>
+                </div>
+
+                <div class="service-project" data-type="video"
+                    data-media-src="videos/LuckyLandscapesWebsiteShowcase.mp4" data-title="Lucky Landscapes Website"
+                    data-description="Custom website for a landscaping company featuring scroll animations, service showcases, and an interactive contact system. Built with vanilla HTML, CSS, and JavaScript.">
+                    <div class="service-project-img">
+                        <img src="images/webdesign.png" alt="Lucky Landscapes Website" loading="lazy">
+                        <div class="service-project-view">▶ Play Showcase</div>
+                    </div>
+                    <div class="service-project-info">
+                        <h3>Lucky Landscapes</h3>
+                        <p>Custom landscaping website — scroll animations, service showcase, contact system.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== CTA ========== -->
+    <div class="service-cta-section">
+        <h2 class="service-cta-title">LET'S BUILD YOUR WEBSITE</h2>
+        <p class="service-cta-text">Want a website that actually feels premium? No templates, no compromises — just
+            custom code that represents your brand perfectly.</p>
+        <a href="index.html#contact" class="service-cta-btn">
+            <span>Start a Project</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+        </a>
+    </div>
+
+    <!-- ========== FOOTER ========== -->
+    <footer id="footer">
+        <div class="footer-top">
+            <div class="footer-logo">
+                <img src="Branding/W films logo_white.png" alt="Wollenburg Media" width="48" height="48">
+                <span class="footer-brand">WOLLENBURG MEDIA</span>
+            </div>
+            <div class="footer-links">
+                <a href="index.html#services">Services</a>
+                <a href="index.html#work">Work</a>
+                <a href="index.html#about">About</a>
+                <a href="index.html#contact">Contact</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Wollenburg Media. All rights reserved.</p>
+            <span class="footer-tagline">VIDEO • PHOTO • DESIGN</span>
+        </div>
+    </footer>
+
+    <!-- ========== LIGHTBOX ========== -->
+    <div id="portfolio-lightbox" class="lightbox" aria-hidden="true" role="dialog">
+        <div class="lightbox-backdrop"></div>
+        <button class="lightbox-close" aria-label="Close lightbox">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+        </button>
+        <div class="lightbox-content">
+            <img class="lightbox-img" src="" alt="Portfolio full view" style="display:none;">
+            <video class="lightbox-video" controls style="display:none;"></video>
+        </div>
+        <div class="lightbox-info" style="display:none;">
+            <h3 class="lightbox-title"></h3>
+            <p class="lightbox-desc"></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile menu
+            const navToggle = document.getElementById('nav-toggle');
+            const navMenu = document.getElementById('nav-menu');
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', () => {
+                    navToggle.classList.toggle('active');
+                    navMenu.classList.toggle('open');
+                    document.body.classList.toggle('menu-open');
+                });
+            }
+
+            // Lightbox
+            const lightbox = document.getElementById('portfolio-lightbox');
+            const lightboxImg = lightbox ? lightbox.querySelector('.lightbox-img') : null;
+            const lightboxVideo = lightbox ? lightbox.querySelector('.lightbox-video') : null;
+            const lightboxClose = lightbox ? lightbox.querySelector('.lightbox-close') : null;
+            const lightboxBackdrop = lightbox ? lightbox.querySelector('.lightbox-backdrop') : null;
+
+            function openLightbox(type, src, title, description) {
+                if (!lightbox) return;
+                lightboxImg.style.display = 'none';
+                lightboxVideo.style.display = 'none';
+                const lightboxTitle = lightbox.querySelector('.lightbox-title');
+                const lightboxDesc = lightbox.querySelector('.lightbox-desc');
+                if (lightboxTitle) lightboxTitle.textContent = title || '';
+                if (lightboxDesc) lightboxDesc.textContent = description || '';
+                const infoPanel = lightbox.querySelector('.lightbox-info');
+                if (infoPanel) infoPanel.style.display = (title || description) ? 'block' : 'none';
+                if (type === 'video') {
+                    lightboxVideo.src = src;
+                    lightboxVideo.style.display = 'block';
+                    lightboxVideo.play();
+                } else {
+                    lightboxImg.src = src;
+                    lightboxImg.style.display = 'block';
+                }
+                lightbox.classList.add('active');
+                lightbox.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeLightbox() {
+                if (!lightbox) return;
+                lightbox.classList.remove('active');
+                lightbox.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+                if (lightboxVideo) { lightboxVideo.pause(); lightboxVideo.src = ''; }
+            }
+
+            document.querySelectorAll('.service-project[data-type]').forEach(item => {
+                item.addEventListener('click', () => {
+                    const type = item.getAttribute('data-type');
+                    const src = item.getAttribute('data-media-src');
+                    const title = item.getAttribute('data-title') || '';
+                    const description = item.getAttribute('data-description') || '';
+                    if (type && src) openLightbox(type, src, title, description);
+                });
+            });
+
+            if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+            if (lightboxBackdrop) lightboxBackdrop.addEventListener('click', closeLightbox);
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && lightbox && lightbox.classList.contains('active')) closeLightbox();
+            });
+        });
+    </script>
+</body>
+
+</html>

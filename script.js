@@ -104,23 +104,23 @@ document.addEventListener('DOMContentLoaded', () => {
             duration: 0.15,
             ease: 'none'
         })
-        // Character stagger reveal — each letter drops in with 3D flip
+        // All text appears at once
         .to('.preloader-text-char', {
             opacity: 1,
             y: '0%',
             rotateX: 0,
-            duration: 0.5,
-            stagger: 0.04,
+            duration: 0.6,
+            stagger: 0,
             ease: 'back.out(1.7)'
         }, '-=0.1')
-        // "MEDIA" subtitle scales in
+        // "MEDIA" subtitle appears simultaneously
         .to('.preloader-sub', {
             opacity: 1,
             y: 0,
             scaleX: 1,
-            duration: 0.4,
+            duration: 0.5,
             ease: 'power2.out'
-        }, '-=0.2')
+        }, '<')
         // Bar
         .to('.preloader-bar', {
             opacity: 1,
@@ -700,9 +700,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // If Google Script URL is configured, POST to it
             if (GOOGLE_SCRIPT_URL) {
                 try {
-                    // Use FormData — no-cors strips Content-Type headers,
-                    // so we can't send JSON. FormData works with Apps Script's e.parameter
-                    const submitData = new FormData();
+                    // Use URLSearchParams — reliable format for Apps Script's e.parameter
+                    const submitData = new URLSearchParams();
                     submitData.append('name', formData.name);
                     submitData.append('email', formData.email);
                     submitData.append('service', formData.service);
@@ -711,7 +710,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const response = await fetch(GOOGLE_SCRIPT_URL, {
                         method: 'POST',
                         mode: 'no-cors',
-                        body: submitData
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: submitData.toString()
                     });
 
                     // no-cors mode returns opaque response, so we assume success
@@ -824,12 +826,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const lightboxClose = lightbox ? lightbox.querySelector('.lightbox-close') : null;
     const lightboxBackdrop = lightbox ? lightbox.querySelector('.lightbox-backdrop') : null;
 
-    function openLightbox(type, src) {
+    function openLightbox(type, src, title, description) {
         if (!lightbox) return;
 
         // Hide both, then show the right one
         lightboxImg.style.display = 'none';
         lightboxVideo.style.display = 'none';
+
+        // Update lightbox info panel
+        const lightboxTitle = lightbox.querySelector('.lightbox-title');
+        const lightboxDesc = lightbox.querySelector('.lightbox-desc');
+        if (lightboxTitle) lightboxTitle.textContent = title || '';
+        if (lightboxDesc) lightboxDesc.textContent = description || '';
+        const infoPanel = lightbox.querySelector('.lightbox-info');
+        if (infoPanel) infoPanel.style.display = (title || description) ? 'block' : 'none';
 
         if (type === 'video') {
             lightboxVideo.src = src;
@@ -864,7 +874,9 @@ document.addEventListener('DOMContentLoaded', () => {
         item.addEventListener('click', () => {
             const type = item.getAttribute('data-type');
             const src = item.getAttribute('data-media-src');
-            if (type && src) openLightbox(type, src);
+            const title = item.getAttribute('data-title') || item.querySelector('.portfolio-title')?.textContent || '';
+            const description = item.getAttribute('data-description') || item.querySelector('.portfolio-excerpt')?.textContent || '';
+            if (type && src) openLightbox(type, src, title, description);
         });
     });
 
@@ -911,6 +923,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 showreelVideo.muted = true;
             }
         });
+    }
+
+    /* ==========================================================
+       22. SHOWREEL AUTOPLAY ON SCROLL — first pixel visible
+       ========================================================== */
+    if (showreelVideo) {
+        const showreelSection = document.getElementById('showreel');
+        if (showreelSection) {
+            const showreelObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        showreelVideo.play().catch(() => { });
+                    } else {
+                        showreelVideo.pause();
+                    }
+                });
+            }, { threshold: 0 });
+            showreelObserver.observe(showreelSection);
+        }
     }
 
 });
