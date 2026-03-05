@@ -27,6 +27,28 @@
     <!-- ========== FILM GRAIN ========== -->
     <div class="grain-overlay" aria-hidden="true"></div>
 
+    <!-- ========== CUSTOM CURSOR ========== -->
+    <div class="cursor-crosshair" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="32" height="32">
+            <line x1="16" y1="0" x2="16" y2="12" stroke="currentColor" stroke-width="1.5" />
+            <line x1="16" y1="20" x2="16" y2="32" stroke="currentColor" stroke-width="1.5" />
+            <line x1="0" y1="16" x2="12" y2="16" stroke="currentColor" stroke-width="1.5" />
+            <line x1="20" y1="16" x2="32" y2="16" stroke="currentColor" stroke-width="1.5" />
+            <circle cx="16" cy="16" r="3" fill="none" stroke="currentColor" stroke-width="1" />
+        </svg>
+    </div>
+
+    <!-- ========== CUSTOM CURSOR ========== -->
+    <div class="cursor-crosshair" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="32" height="32">
+            <line x1="16" y1="0" x2="16" y2="12" stroke="currentColor" stroke-width="1.5" />
+            <line x1="16" y1="20" x2="16" y2="32" stroke="currentColor" stroke-width="1.5" />
+            <line x1="0" y1="16" x2="12" y2="16" stroke="currentColor" stroke-width="1.5" />
+            <line x1="20" y1="16" x2="32" y2="16" stroke="currentColor" stroke-width="1.5" />
+            <circle cx="16" cy="16" r="3" fill="none" stroke="currentColor" stroke-width="1" />
+        </svg>
+    </div>
+
     <!-- ========== NAVIGATION ========== -->
     <nav id="navbar" class="scrolled">
         <a href="index.html" class="nav-logo" aria-label="Wollenburg Media Home">
@@ -235,6 +257,25 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Mobile detection
+            const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.innerWidth < 768;
+
+            // Custom cursor
+            if (!isMobile) {
+                const cursor = document.querySelector('.cursor-crosshair');
+                document.addEventListener('mousemove', (e) => {
+                    cursor.style.left = e.clientX + 'px';
+                    cursor.style.top = e.clientY + 'px';
+                });
+                const hoverSelectors = 'a, button, input, select, textarea, .service-project, .lightbox-close, .service-back, .service-cta-btn';
+                document.addEventListener('mouseover', (e) => {
+                    if (e.target.closest(hoverSelectors)) cursor.classList.add('hovering');
+                });
+                document.addEventListener('mouseout', (e) => {
+                    if (e.target.closest(hoverSelectors)) cursor.classList.remove('hovering');
+                });
+            }
+
             // Mobile menu
             const navToggle = document.getElementById('nav-toggle');
             const navMenu = document.getElementById('nav-menu');

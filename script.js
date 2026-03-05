@@ -364,21 +364,25 @@ document.addEventListener('DOMContentLoaded', () => {
             duration: 0.8, ease: 'power2.out', delay: 0.1
         });
 
-        // Hero title chars
+        // Hero title chars — animate like preloader (all at once with stagger)
         const heroTitleData = splitData.find(d => d.el.classList.contains('hero-title'));
         if (heroTitleData) {
             gsap.to(heroTitleData.chars, {
                 opacity: 1, y: 0, rotateX: 0,
-                duration: 1.2, stagger: 0.06,
+                duration: 0.6, stagger: 0.04,
                 ease: 'power3.out', delay: 0.2
             });
         }
 
-        // "MEDIA" subtitle
-        gsap.to('.hero-title-sub', {
-            opacity: 1, y: 0,
-            duration: 0.6, ease: 'power2.out', delay: 0.8
-        });
+        // "MEDIA" subtitle chars — same animation, same timing (all at once)
+        const heroSubChars = document.querySelectorAll('.hero-sub-char');
+        if (heroSubChars.length) {
+            gsap.to(heroSubChars, {
+                opacity: 1, y: 0, rotateX: 0,
+                duration: 0.6, stagger: 0.04,
+                ease: 'power3.out', delay: 0.2
+            });
+        }
 
         // Tagline
         gsap.to('.hero-tagline', {
@@ -533,12 +537,30 @@ document.addEventListener('DOMContentLoaded', () => {
             cursor.style.top = cursorY + 'px';
         });
 
-        const hoverTargets = document.querySelectorAll('a, button, [data-magnetic], input, select, textarea');
-        hoverTargets.forEach(target => {
-            target.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
-            target.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
+        // Use event delegation so ALL interactive elements get hover effect
+        const hoverSelectors = 'a, button, [data-magnetic], input, select, textarea, .service-card, .portfolio-item, .service-project, .lightbox-close, [data-href]';
+        document.addEventListener('mouseover', (e) => {
+            if (e.target.closest(hoverSelectors)) {
+                cursor.classList.add('hovering');
+            }
+        });
+        document.addEventListener('mouseout', (e) => {
+            if (e.target.closest(hoverSelectors)) {
+                cursor.classList.remove('hovering');
+            }
         });
     }
+
+    /* ==========================================================
+       SERVICE CARD FULL-CLICK NAVIGATION
+       ========================================================== */
+    document.querySelectorAll('.service-card[data-href]').forEach(card => {
+        card.addEventListener('click', (e) => {
+            // Don't double-navigate if they clicked the inner <a> link
+            if (e.target.closest('a')) return;
+            window.location.href = card.getAttribute('data-href');
+        });
+    });
 
     /* ==========================================================
        10. MAGNETIC HOVER — Nav links only (NOT submit button)
@@ -572,6 +594,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    /* ==========================================================
+       11b. SERVICE CARD CLICK — Navigate to dedicated page
+       ========================================================== */
+    document.querySelectorAll('.service-card[data-href]').forEach(card => {
+        card.addEventListener('click', () => {
+            window.location.href = card.getAttribute('data-href');
+        });
+    });
 
     /* ==========================================================
        12. NAVBAR

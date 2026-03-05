@@ -84,6 +84,7 @@ button {
 img {
     display: block;
     max-width: 100%;
+    cursor: none;
 }
 
 ul {
@@ -123,6 +124,30 @@ ul {
     transform: translate(-50%, -50%) scale(1.4) rotate(45deg);
     opacity: 1;
     mix-blend-mode: normal;
+}
+
+/* Force cursor: none on ALL interactive elements to prevent browser default leak */
+input,
+select,
+textarea,
+label,
+.service-card,
+.portfolio-item,
+.service-project,
+.lightbox-close,
+.lightbox-backdrop,
+.nav-toggle,
+.back-to-top,
+.showreel-play-btn,
+.service-link,
+.service-back,
+.service-cta-btn,
+.hero-cta,
+.footer-links a,
+.contact-link,
+[data-magnetic],
+[data-href] {
+    cursor: none;
 }
 
 /* ======================================================
@@ -626,9 +651,18 @@ ul {
     font-size: clamp(1.5rem, 4vw, 3rem);
     letter-spacing: 0.6em;
     color: var(--accent);
-    opacity: 0;
-    transform: translateY(20px);
     margin-top: -0.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.05em;
+    overflow: hidden;
+}
+
+.hero-sub-char {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(100%) rotateX(-90deg);
+    transform-origin: bottom center;
 }
 
 .hero-tagline-wrap {
