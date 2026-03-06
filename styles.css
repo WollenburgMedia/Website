@@ -64,27 +64,23 @@ body {
     color: var(--text);
     overflow-x: hidden;
     font-weight: 300;
-    cursor: none;
 }
 
 a {
     color: inherit;
     text-decoration: none;
-    cursor: none;
 }
 
 button {
     background: none;
     border: none;
     color: inherit;
-    cursor: none;
     font: inherit;
 }
 
 img {
     display: block;
     max-width: 100%;
-    cursor: none;
 }
 
 ul {
@@ -96,59 +92,7 @@ ul {
     color: var(--pure-white);
 }
 
-/* ======================================================
-   CUSTOM CURSOR — Crosshair
-   ====================================================== */
-.cursor-crosshair {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 32px;
-    height: 32px;
-    pointer-events: none;
-    z-index: var(--z-cursor);
-    transform: translate(-50%, -50%);
-    color: var(--pure-white);
-    mix-blend-mode: difference;
-    transition: transform 0.2s var(--ease), color 0.3s, opacity 0.3s;
-    opacity: 0.8;
-}
 
-.cursor-crosshair svg {
-    width: 100%;
-    height: 100%;
-}
-
-.cursor-crosshair.hovering {
-    color: var(--accent);
-    transform: translate(-50%, -50%) scale(1.4) rotate(45deg);
-    opacity: 1;
-    mix-blend-mode: normal;
-}
-
-/* Force cursor: none on ALL interactive elements to prevent browser default leak */
-input,
-select,
-textarea,
-label,
-.service-card,
-.portfolio-item,
-.service-project,
-.lightbox-close,
-.lightbox-backdrop,
-.nav-toggle,
-.back-to-top,
-.showreel-play-btn,
-.service-link,
-.service-back,
-.service-cta-btn,
-.hero-cta,
-.footer-links a,
-.contact-link,
-[data-magnetic],
-[data-href] {
-    cursor: none;
-}
 
 /* ======================================================
    GRAIN OVERLAY
@@ -580,6 +524,7 @@ label,
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    transform-origin: center center;
     z-index: 1;
     pointer-events: none;
     user-select: none;
@@ -1188,6 +1133,8 @@ section {
 .portfolio-item-content {
     padding: 1.5rem 2rem;
     position: relative;
+    background: var(--card);
+    z-index: 2;
 }
 
 .portfolio-cat {
@@ -1277,7 +1224,7 @@ section {
     position: fixed;
     inset: 0;
     z-index: 9500;
-    background: var(--deep);
+    background: linear-gradient(135deg, var(--deep) 0%, var(--black) 100%);
     clip-path: inset(0 0 0 100%);
     pointer-events: none;
 }
@@ -1401,6 +1348,68 @@ section {
     font-size: 0.9rem;
     line-height: 1.6;
     color: var(--text);
+}
+
+/* ======================================================
+   SHOWREEL FULLSCREEN OVERLAY
+   ====================================================== */
+.showreel-fullscreen-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10001;
+    background: rgba(0, 0, 0, 0.96);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.showreel-fullscreen-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.showreel-overlay-close {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    z-index: 10;
+    color: var(--pure-white);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s, border-color 0.3s, transform 0.3s;
+}
+
+.showreel-overlay-close:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    transform: rotate(90deg);
+}
+
+.showreel-overlay-video {
+    width: 90vw;
+    max-width: 1400px;
+    max-height: 85vh;
+    border-radius: 4px;
+    background: #000;
+    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    transform: scale(0.92);
+    transition: opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s;
+}
+
+.showreel-fullscreen-overlay.active .showreel-overlay-video {
+    opacity: 1;
+    transform: scale(1);
 }
 
 /* ======================================================
@@ -1950,6 +1959,11 @@ section {
     background: var(--black);
 }
 
+#contact .section-title {
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+}
+
 .contact-bg-text {
     position: absolute;
     top: 50%;
@@ -2036,7 +2050,6 @@ section {
     font-size: 1rem;
     outline: none;
     transition: border-color 0.4s;
-    cursor: none;
 }
 
 .form-group input:focus,
@@ -2183,7 +2196,6 @@ section {
     position: relative;
     overflow: hidden;
     transition: border-color 0.4s, color 0.4s;
-    cursor: none;
 }
 
 .form-submit::before {
@@ -2378,23 +2390,6 @@ section {
     :root {
         --section-pad: 4rem;
         --section-pad-x: 1.5rem;
-    }
-
-    /* Restore normal cursor */
-    body {
-        cursor: auto;
-    }
-
-    a,
-    button,
-    input,
-    select,
-    textarea {
-        cursor: auto;
-    }
-
-    .cursor-crosshair {
-        display: none !important;
     }
 
     /* Prevent horizontal overflow */

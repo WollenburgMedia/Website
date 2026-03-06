@@ -286,29 +286,29 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Hero content parallax
+        // Hero content — text flies away (scales up + fades out)
         gsap.to('.hero-content', {
-            y: -120,
+            y: -60,
+            scale: 1.15,
+            opacity: 0,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '#hero',
+                start: '10% top',
+                end: '60% top',
+                scrub: true
+            }
+        });
+
+        // Logo watermark — camera zooms through it (massive scale up + fade out)
+        gsap.to('.hero-watermark', {
+            scale: 8,
             opacity: 0,
             ease: 'none',
             scrollTrigger: {
                 trigger: '#hero',
                 start: '15% top',
-                end: '85% top',
-                scrub: true
-            }
-        });
-
-        // Watermark parallax
-        gsap.to('.hero-watermark', {
-            y: -80,
-            scale: 0.85,
-            opacity: 0,
-            ease: 'none',
-            scrollTrigger: {
-                trigger: '#hero',
-                start: 'top top',
-                end: 'bottom top',
+                end: '80% top',
                 scrub: true
             }
         });
@@ -321,7 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
             scrollTrigger: {
                 trigger: '#hero',
                 start: '5% top',
-                end: '25% top',
+                end: '20% top',
                 scrub: true
             }
         });
@@ -523,33 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /* ==========================================================
-       9. CUSTOM CURSOR — Crosshair
-       ========================================================== */
-    if (!isMobile) {
-        const cursor = document.querySelector('.cursor-crosshair');
-        let cursorX = 0, cursorY = 0;
 
-        document.addEventListener('mousemove', (e) => {
-            cursorX = e.clientX;
-            cursorY = e.clientY;
-            cursor.style.left = cursorX + 'px';
-            cursor.style.top = cursorY + 'px';
-        });
-
-        // Use event delegation so ALL interactive elements get hover effect
-        const hoverSelectors = 'a, button, [data-magnetic], input, select, textarea, .service-card, .portfolio-item, .service-project, .lightbox-close, [data-href]';
-        document.addEventListener('mouseover', (e) => {
-            if (e.target.closest(hoverSelectors)) {
-                cursor.classList.add('hovering');
-            }
-        });
-        document.addEventListener('mouseout', (e) => {
-            if (e.target.closest(hoverSelectors)) {
-                cursor.classList.remove('hovering');
-            }
-        });
-    }
 
     /* ==========================================================
        SERVICE CARD FULL-CLICK NAVIGATION — Smooth page transition
@@ -561,15 +535,24 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = url;
             return;
         }
-        // Animate the wipe overlay in
-        gsap.to(pageTransitionOverlay, {
+        // Multi-step cinematic transition
+        const tl = gsap.timeline();
+        // Step 1: Fade out page content slightly
+        tl.to('body', {
+            opacity: 0.6,
+            scale: 0.98,
+            duration: 0.3,
+            ease: 'power2.in'
+        })
+        // Step 2: Sweep the overlay in
+        .to(pageTransitionOverlay, {
             clipPath: 'inset(0 0 0 0)',
-            duration: 0.6,
-            ease: 'power3.inOut',
+            duration: 0.7,
+            ease: 'power4.inOut',
             onComplete() {
                 window.location.href = url;
             }
-        });
+        }, '-=0.1');
     }
 
     document.querySelectorAll('.service-card[data-href]').forEach(card => {
@@ -931,58 +914,69 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* ==========================================================
-       21. SHOWREEL PLAY BUTTON
+       21. SHOWREEL PLAY BUTTON — Custom overlay (not native fullscreen)
        ========================================================== */
     const showreelPlayBtn = document.getElementById('showreel-play');
     const showreelVideo = document.querySelector('.showreel-video');
     const showreelOverlay = document.querySelector('.showreel-overlay');
     const showreelContent = document.querySelector('.showreel-content');
+    const showreelFullOverlay = document.getElementById('showreel-overlay');
+    const showreelOverlayVideo = document.getElementById('showreel-overlay-video');
+    const showreelOverlayClose = document.getElementById('showreel-overlay-close');
+
+    function openShowreelOverlay() {
+        if (!showreelFullOverlay || !showreelOverlayVideo || !showreelVideo) return;
+
+        // Copy the video source
+        const videoSrc = showreelVideo.querySelector('source');
+        if (videoSrc) {
+            showreelOverlayVideo.src = videoSrc.src;
+        } else {
+            showreelOverlayVideo.src = showreelVideo.src || 'videos/showreel.mp4';
+        }
+
+        showreelFullOverlay.classList.add('active');
+        showreelFullOverlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+
+        showreelOverlayVideo.currentTime = 0;
+        showreelOverlayVideo.play();
+    }
+
+    function closeShowreelOverlay() {
+        if (!showreelFullOverlay || !showreelOverlayVideo) return;
+
+        showreelOverlayVideo.pause();
+        showreelOverlayVideo.src = '';
+
+        showreelFullOverlay.classList.remove('active');
+        showreelFullOverlay.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
 
     if (showreelPlayBtn && showreelVideo) {
-        showreelPlayBtn.addEventListener('click', () => {
-            // Unmute and play
-            showreelVideo.muted = false;
-            showreelVideo.currentTime = 0;
-            showreelVideo.play();
+        showreelPlayBtn.addEventListener('click', openShowreelOverlay);
+    }
 
-            // Fade out the black tint overlay and content
-            if (showreelOverlay) {
-                gsap.to(showreelOverlay, { opacity: 0, duration: 0.6, ease: 'power2.out' });
-            }
-            if (showreelContent) {
-                gsap.to(showreelContent, { opacity: 0, duration: 0.4, ease: 'power2.out', pointerEvents: 'none' });
-            }
-            // Remove the darkening filter from the video
-            gsap.to(showreelVideo, { filter: 'brightness(1) contrast(1)', duration: 0.6, ease: 'power2.out' });
+    if (showreelOverlayClose) {
+        showreelOverlayClose.addEventListener('click', closeShowreelOverlay);
+    }
 
-            // Request fullscreen
-            if (showreelVideo.requestFullscreen) {
-                showreelVideo.requestFullscreen();
-            } else if (showreelVideo.webkitRequestFullscreen) {
-                showreelVideo.webkitRequestFullscreen();
-            } else if (showreelVideo.webkitEnterFullScreen) {
-                showreelVideo.webkitEnterFullScreen();
-            }
-        });
-
-        // Re-mute and restore tint when exiting fullscreen
-        function restoreShowreel() {
-            showreelVideo.muted = true;
-            if (showreelOverlay) {
-                gsap.to(showreelOverlay, { opacity: 1, duration: 0.5, ease: 'power2.inOut' });
-            }
-            if (showreelContent) {
-                gsap.to(showreelContent, { opacity: 1, duration: 0.5, ease: 'power2.inOut', pointerEvents: 'auto' });
-            }
-            gsap.to(showreelVideo, { filter: 'brightness(0.5) contrast(1.15)', duration: 0.5, ease: 'power2.inOut' });
-        }
-        document.addEventListener('fullscreenchange', () => {
-            if (!document.fullscreenElement) restoreShowreel();
-        });
-        document.addEventListener('webkitfullscreenchange', () => {
-            if (!document.webkitFullscreenElement) restoreShowreel();
+    // Close on backdrop click (outside video)
+    if (showreelFullOverlay) {
+        showreelFullOverlay.addEventListener('click', (e) => {
+            if (e.target === showreelFullOverlay) closeShowreelOverlay();
         });
     }
+
+    // Escape key closes both lightbox and showreel overlay
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (showreelFullOverlay && showreelFullOverlay.classList.contains('active')) {
+                closeShowreelOverlay();
+            }
+        }
+    });
 
     /* ==========================================================
        22. SHOWREEL AUTOPLAY ON SCROLL — first pixel visible
