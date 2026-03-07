@@ -19,6 +19,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
 
+    <!-- Lenis Smooth Scroll -->
+    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js" defer></script>
+
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -26,6 +29,9 @@
 
     <!-- ========== FILM GRAIN ========== -->
     <div class="grain-overlay" aria-hidden="true"></div>
+
+    <!-- ========== PAGE TRANSITION OVERLAY ========== -->
+    <div class="page-transition-overlay page-transition-entering" aria-hidden="true"></div>
 
 
 
@@ -129,16 +135,31 @@
                 <h2 class="section-title" style="font-size: clamp(2.5rem, 6vw, 5rem);">FEATURED PROJECTS</h2>
             </div>
             <div class="service-portfolio-grid">
-                <div class="service-project" data-type="video" data-media-src="images/showreel.mp4"
-                    data-title="Cinematic Brand Film"
+                <div class="service-project" data-type="youtube"
+                    data-media-src="https://www.youtube.com/embed/_PD4CMq_ngg" data-title="Cinematic Brand Film"
                     data-description="A full-scale brand narrative for a luxury automotive campaign, shot on RED with anamorphic lenses and a crew of twelve.">
                     <div class="service-project-img">
-                        <img src="images/videography.jpg" alt="Cinematic Brand Film" loading="lazy">
+                        <img src="https://img.youtube.com/vi/_PD4CMq_ngg/maxresdefault.jpg" alt="Cinematic Brand Film"
+                            loading="lazy">
                         <div class="service-project-view">▶ Play Video</div>
                     </div>
                     <div class="service-project-info">
                         <h3>Cinematic Brand Film</h3>
                         <p>Luxury automotive campaign — shot on RED, anamorphic glass, full color grade.</p>
+                    </div>
+                </div>
+                <div class="service-project" data-type="youtube"
+                    data-media-src="https://www.youtube.com/embed/DMjV4PTVBrs" data-title="Visual Showcase"
+                    data-description="Cinematic visual storytelling — bold framing, dramatic color grading, and immersive pacing.">
+                    <div class="service-project-img">
+                        <img src="https://img.youtube.com/vi/DMjV4PTVBrs/maxresdefault.jpg" alt="Visual Showcase"
+                            loading="lazy">
+                        <div class="service-project-view">▶ Play Video</div>
+                    </div>
+                    <div class="service-project-info">
+                        <h3>Visual Showcase</h3>
+                        <p>Cinematic visual storytelling — bold framing, dramatic color grading, and immersive pacing.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -238,6 +259,11 @@
         <div class="lightbox-content">
             <img class="lightbox-img" src="" alt="Portfolio full view" style="display:none;">
             <video class="lightbox-video" controls style="display:none;"></video>
+            <div class="lightbox-iframe-wrap" style="display:none;">
+                <iframe class="lightbox-youtube" src="" frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen></iframe>
+            </div>
         </div>
         <div class="lightbox-info" style="display:none;">
             <h3 class="lightbox-title"></h3>
@@ -247,12 +273,61 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Mobile detection
             const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.innerWidth < 768;
 
+            /* === LENIS SMOOTH SCROLL === */
+            let lenis;
+            if (!isMobile) {
+                lenis = new Lenis({
+                    duration: 1.2,
+                    easing(t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+                    orientation: 'vertical',
+                    gestureOrientation: 'vertical',
+                    smoothWheel: true,
+                    wheelMultiplier: 1,
+                    touchMultiplier: 2,
+                });
+                lenis.on('scroll', ScrollTrigger.update);
+                gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+                gsap.ticker.lagSmoothing(0);
+            }
 
+            /* === PAGE TRANSITION — Enter animation === */
+            const pageTransitionOverlay = document.querySelector('.page-transition-overlay');
+            if (pageTransitionOverlay) {
+                pageTransitionOverlay.style.clipPath = 'inset(0 0 0 0)';
+                gsap.to(pageTransitionOverlay, {
+                    clipPath: 'inset(0 100% 0 0)',
+                    duration: 0.7,
+                    ease: 'power4.inOut',
+                    delay: 0.1,
+                    onComplete() {
+                        pageTransitionOverlay.style.pointerEvents = 'none';
+                    }
+                });
+            }
 
-            // Mobile menu
+            function navigateWithTransition(url) {
+                if (!pageTransitionOverlay) { window.location.href = url; return; }
+                const tl = gsap.timeline();
+                tl.to('body', { opacity: 0.6, scale: 0.98, duration: 0.3, ease: 'power2.in' })
+                    .to(pageTransitionOverlay, {
+                        clipPath: 'inset(0 0 0 0)',
+                        duration: 0.7,
+                        ease: 'power4.inOut',
+                        onComplete() { window.location.href = url; }
+                    }, '-=0.1');
+            }
+
+            // Back-to-home links use transition
+            document.querySelectorAll('.service-back, .nav-logo').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    navigateWithTransition(link.getAttribute('href'));
+                });
+            });
+
+            /* === MOBILE MENU === */
             const navToggle = document.getElementById('nav-toggle');
             const navMenu = document.getElementById('nav-menu');
             if (navToggle && navMenu) {
@@ -263,24 +338,32 @@
                 });
             }
 
-            // Lightbox
+            /* === LIGHTBOX (with YouTube support) === */
             const lightbox = document.getElementById('portfolio-lightbox');
             const lightboxImg = lightbox ? lightbox.querySelector('.lightbox-img') : null;
             const lightboxVideo = lightbox ? lightbox.querySelector('.lightbox-video') : null;
+            const lightboxIframeWrap = lightbox ? lightbox.querySelector('.lightbox-iframe-wrap') : null;
+            const lightboxYoutube = lightbox ? lightbox.querySelector('.lightbox-youtube') : null;
             const lightboxClose = lightbox ? lightbox.querySelector('.lightbox-close') : null;
             const lightboxBackdrop = lightbox ? lightbox.querySelector('.lightbox-backdrop') : null;
 
             function openLightbox(type, src, title, description) {
                 if (!lightbox) return;
-                lightboxImg.style.display = 'none';
-                lightboxVideo.style.display = 'none';
+                if (lightboxImg) lightboxImg.style.display = 'none';
+                if (lightboxVideo) lightboxVideo.style.display = 'none';
+                if (lightboxIframeWrap) lightboxIframeWrap.style.display = 'none';
+                if (lightboxYoutube) lightboxYoutube.src = '';
                 const lightboxTitle = lightbox.querySelector('.lightbox-title');
                 const lightboxDesc = lightbox.querySelector('.lightbox-desc');
                 if (lightboxTitle) lightboxTitle.textContent = title || '';
                 if (lightboxDesc) lightboxDesc.textContent = description || '';
                 const infoPanel = lightbox.querySelector('.lightbox-info');
                 if (infoPanel) infoPanel.style.display = (title || description) ? 'block' : 'none';
-                if (type === 'video') {
+                if (type === 'youtube') {
+                    const ytSrc = src + (src.includes('?') ? '&' : '?') + 'autoplay=1&rel=0&modestbranding=1';
+                    if (lightboxYoutube) lightboxYoutube.src = ytSrc;
+                    if (lightboxIframeWrap) lightboxIframeWrap.style.display = 'block';
+                } else if (type === 'video') {
                     lightboxVideo.src = src;
                     lightboxVideo.style.display = 'block';
                     lightboxVideo.play();
@@ -299,6 +382,7 @@
                 lightbox.setAttribute('aria-hidden', 'true');
                 document.body.style.overflow = '';
                 if (lightboxVideo) { lightboxVideo.pause(); lightboxVideo.src = ''; }
+                if (lightboxYoutube) { lightboxYoutube.src = ''; }
             }
 
             document.querySelectorAll('.service-project[data-type]').forEach(item => {
@@ -317,7 +401,7 @@
                 if (e.key === 'Escape' && lightbox && lightbox.classList.contains('active')) closeLightbox();
             });
 
-            // Contact form submission
+            /* === CONTACT FORM === */
             const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyy8ZI3rItBS8wOVDvkwslXWVh4YitCvwYvtHpgbWqNBvaFFg_kbrtRVQSwXETnInBQqA/exec';
             const form = document.getElementById('contact-form');
             const formStatus = document.getElementById('form-status');
@@ -381,6 +465,22 @@
                     }, 4000);
                 });
             }
+
+            /* === SMOOTH SCROLL for anchor links === */
+            document.querySelectorAll('a[href^="#"]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const target = document.querySelector(link.getAttribute('href'));
+                    if (target) {
+                        const offset = 80;
+                        if (lenis) { lenis.scrollTo(target, { offset: -offset, duration: 1.5 }); }
+                        else {
+                            const top = target.getBoundingClientRect().top + window.scrollY - offset;
+                            window.scrollTo({ top, behavior: 'smooth' });
+                        }
+                    }
+                });
+            });
         });
     </script>
 </body>

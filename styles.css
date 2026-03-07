@@ -1229,6 +1229,11 @@ section {
     pointer-events: none;
 }
 
+/* Enter state — starts fully covering, animated away by JS */
+.page-transition-entering {
+    clip-path: inset(0 0 0 0);
+}
+
 /* ======================================================
    LIGHTBOX
    ====================================================== */
@@ -1297,6 +1302,26 @@ section {
     object-fit: contain;
     border-radius: 4px;
     box-shadow: 0 20px 80px rgba(0, 0, 0, 0.6);
+}
+
+/* YouTube iframe wrapper — responsive 16:9 */
+.lightbox-iframe-wrap {
+    position: relative;
+    width: 90vw;
+    max-width: 1200px;
+    aspect-ratio: 16 / 9;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #000;
+    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.6);
+}
+
+.lightbox-iframe-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
 }
 
 .lightbox-video {
@@ -1522,6 +1547,10 @@ section {
 .service-process {
     max-width: 1000px;
     margin: 0 auto;
+}
+
+.service-process .section-header {
+    text-align: center;
 }
 
 .process-grid {
@@ -1957,6 +1986,8 @@ section {
    ====================================================== */
 #contact {
     background: var(--black);
+    padding-top: clamp(4rem, 8vw, 8rem);
+    padding-bottom: clamp(4rem, 8vw, 8rem);
 }
 
 #contact .section-title {

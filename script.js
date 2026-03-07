@@ -847,15 +847,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const lightbox = document.getElementById('portfolio-lightbox');
     const lightboxImg = lightbox ? lightbox.querySelector('.lightbox-img') : null;
     const lightboxVideo = lightbox ? lightbox.querySelector('.lightbox-video') : null;
+    const lightboxIframeWrap = lightbox ? lightbox.querySelector('.lightbox-iframe-wrap') : null;
+    const lightboxYoutube = lightbox ? lightbox.querySelector('.lightbox-youtube') : null;
     const lightboxClose = lightbox ? lightbox.querySelector('.lightbox-close') : null;
     const lightboxBackdrop = lightbox ? lightbox.querySelector('.lightbox-backdrop') : null;
 
     function openLightbox(type, src, title, description) {
         if (!lightbox) return;
 
-        // Hide both, then show the right one
-        lightboxImg.style.display = 'none';
-        lightboxVideo.style.display = 'none';
+        // Hide all media types
+        if (lightboxImg) lightboxImg.style.display = 'none';
+        if (lightboxVideo) lightboxVideo.style.display = 'none';
+        if (lightboxIframeWrap) lightboxIframeWrap.style.display = 'none';
+        if (lightboxYoutube) lightboxYoutube.src = '';
 
         // Update lightbox info panel
         const lightboxTitle = lightbox.querySelector('.lightbox-title');
@@ -865,7 +869,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const infoPanel = lightbox.querySelector('.lightbox-info');
         if (infoPanel) infoPanel.style.display = (title || description) ? 'block' : 'none';
 
-        if (type === 'video') {
+        if (type === 'youtube') {
+            // YouTube embed — add autoplay parameter
+            const ytSrc = src + (src.includes('?') ? '&' : '?') + 'autoplay=1&rel=0&modestbranding=1';
+            if (lightboxYoutube) lightboxYoutube.src = ytSrc;
+            if (lightboxIframeWrap) lightboxIframeWrap.style.display = 'block';
+        } else if (type === 'video') {
             lightboxVideo.src = src;
             lightboxVideo.style.display = 'block';
             lightboxVideo.play();
@@ -890,6 +899,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (lightboxVideo) {
             lightboxVideo.pause();
             lightboxVideo.src = '';
+        }
+
+        // Stop YouTube iframe
+        if (lightboxYoutube) {
+            lightboxYoutube.src = '';
         }
     }
 
