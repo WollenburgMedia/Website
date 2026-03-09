@@ -544,15 +544,15 @@ document.addEventListener('DOMContentLoaded', () => {
             duration: 0.3,
             ease: 'power2.in'
         })
-        // Step 2: Sweep the overlay in
-        .to(pageTransitionOverlay, {
-            clipPath: 'inset(0 0 0 0)',
-            duration: 0.7,
-            ease: 'power4.inOut',
-            onComplete() {
-                window.location.href = url;
-            }
-        }, '-=0.1');
+            // Step 2: Sweep the overlay in
+            .to(pageTransitionOverlay, {
+                clipPath: 'inset(0 0 0 0)',
+                duration: 0.7,
+                ease: 'power4.inOut',
+                onComplete() {
+                    window.location.href = url;
+                }
+            }, '-=0.1');
     }
 
     document.querySelectorAll('.service-card[data-href]').forEach(card => {
@@ -842,7 +842,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ==========================================================
-       20. PORTFOLIO LIGHTBOX
+       20. PORTFOLIO LIGHTBOX — Gallery + Side Panel
        ========================================================== */
     const lightbox = document.getElementById('portfolio-lightbox');
     const lightboxImg = lightbox ? lightbox.querySelector('.lightbox-img') : null;
@@ -851,8 +851,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const lightboxYoutube = lightbox ? lightbox.querySelector('.lightbox-youtube') : null;
     const lightboxClose = lightbox ? lightbox.querySelector('.lightbox-close') : null;
     const lightboxBackdrop = lightbox ? lightbox.querySelector('.lightbox-backdrop') : null;
+    const lightboxPrev = lightbox ? lightbox.querySelector('.lightbox-prev') : null;
+    const lightboxNext = lightbox ? lightbox.querySelector('.lightbox-next') : null;
+    const lightboxCounter = lightbox ? lightbox.querySelector('.lightbox-counter') : null;
 
-    function openLightbox(type, src, title, description) {
+    // Gallery state
+    let galleryImages = [];
+    let galleryIndex = 0;
+
+    function showGalleryImage(index) {
+        if (!galleryImages.length || !lightboxImg) return;
+        galleryIndex = index;
+        lightboxImg.src = galleryImages[galleryIndex];
+        if (lightboxCounter) {
+            lightboxCounter.textContent = `${galleryIndex + 1} / ${galleryImages.length}`;
+        }
+    }
+
+    function openLightbox(type, src, title, description, gallery) {
         if (!lightbox) return;
 
         // Hide all media types
@@ -861,16 +877,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (lightboxIframeWrap) lightboxIframeWrap.style.display = 'none';
         if (lightboxYoutube) lightboxYoutube.src = '';
 
+        // Reset gallery
+        galleryImages = [];
+        galleryIndex = 0;
+        if (lightboxPrev) lightboxPrev.style.display = 'none';
+        if (lightboxNext) lightboxNext.style.display = 'none';
+        if (lightboxCounter) lightboxCounter.style.display = 'none';
+
         // Update lightbox info panel
         const lightboxTitle = lightbox.querySelector('.lightbox-title');
         const lightboxDesc = lightbox.querySelector('.lightbox-desc');
         if (lightboxTitle) lightboxTitle.textContent = title || '';
         if (lightboxDesc) lightboxDesc.textContent = description || '';
         const infoPanel = lightbox.querySelector('.lightbox-info');
-        if (infoPanel) infoPanel.style.display = (title || description) ? 'block' : 'none';
+        if (infoPanel) infoPanel.style.display = (title || description) ? 'flex' : 'none';
 
         if (type === 'youtube') {
-            // YouTube embed — add autoplay parameter
             const ytSrc = src + (src.includes('?') ? '&' : '?') + 'autoplay=1&rel=0&modestbranding=1';
             if (lightboxYoutube) lightboxYoutube.src = ytSrc;
             if (lightboxIframeWrap) lightboxIframeWrap.style.display = 'block';
@@ -878,6 +900,13 @@ document.addEventListener('DOMContentLoaded', () => {
             lightboxVideo.src = src;
             lightboxVideo.style.display = 'block';
             lightboxVideo.play();
+        } else if (type === 'gallery' && gallery && gallery.length) {
+            galleryImages = gallery;
+            lightboxImg.style.display = 'block';
+            showGalleryImage(0);
+            if (lightboxPrev) lightboxPrev.style.display = 'flex';
+            if (lightboxNext) lightboxNext.style.display = 'flex';
+            if (lightboxCounter) lightboxCounter.style.display = 'block';
         } else {
             lightboxImg.src = src;
             lightboxImg.style.display = 'block';
@@ -895,16 +924,27 @@ document.addEventListener('DOMContentLoaded', () => {
         lightbox.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
 
-        // Stop video if playing
-        if (lightboxVideo) {
-            lightboxVideo.pause();
-            lightboxVideo.src = '';
-        }
+        if (lightboxVideo) { lightboxVideo.pause(); lightboxVideo.src = ''; }
+        if (lightboxYoutube) { lightboxYoutube.src = ''; }
+        galleryImages = [];
+    }
 
-        // Stop YouTube iframe
-        if (lightboxYoutube) {
-            lightboxYoutube.src = '';
-        }
+    // Gallery navigation
+    if (lightboxPrev) {
+        lightboxPrev.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (galleryImages.length) {
+                showGalleryImage((galleryIndex - 1 + galleryImages.length) % galleryImages.length);
+            }
+        });
+    }
+    if (lightboxNext) {
+        lightboxNext.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (galleryImages.length) {
+                showGalleryImage((galleryIndex + 1) % galleryImages.length);
+            }
+        });
     }
 
     // Click on portfolio items to open lightbox
@@ -914,7 +954,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const src = item.getAttribute('data-media-src');
             const title = item.getAttribute('data-title') || item.querySelector('.portfolio-title')?.textContent || '';
             const description = item.getAttribute('data-description') || item.querySelector('.portfolio-excerpt')?.textContent || '';
-            if (type && src) openLightbox(type, src, title, description);
+
+            // Check for gallery data
+            const galleryAttr = item.getAttribute('data-gallery');
+            if (galleryAttr) {
+                const gallery = galleryAttr.split(',').map(s => s.trim());
+                openLightbox('gallery', src, title, description, gallery);
+            } else if (type && src) {
+                openLightbox(type, src, title, description);
+            }
         });
     });
 
@@ -922,8 +970,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
     if (lightboxBackdrop) lightboxBackdrop.addEventListener('click', closeLightbox);
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && lightbox && lightbox.classList.contains('active')) {
-            closeLightbox();
+        if (!lightbox || !lightbox.classList.contains('active')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft' && galleryImages.length) {
+            showGalleryImage((galleryIndex - 1 + galleryImages.length) % galleryImages.length);
+        }
+        if (e.key === 'ArrowRight' && galleryImages.length) {
+            showGalleryImage((galleryIndex + 1) % galleryImages.length);
         }
     });
 

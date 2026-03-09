@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 
-<body>
+<body class="preloader-active">
 
     <!-- ========== FILM GRAIN ========== -->
     <div class="grain-overlay" aria-hidden="true"></div>
@@ -33,7 +33,21 @@
     <!-- ========== PAGE TRANSITION OVERLAY ========== -->
     <div class="page-transition-overlay page-transition-entering" aria-hidden="true"></div>
 
-
+    <!-- ========== SUBPAGE PRELOADER ========== -->
+    <div id="subpage-preloader" class="subpage-preloader">
+        <div class="subpage-preloader-inner">
+            <svg class="subpage-preloader-logo" viewBox="0 0 100 110" fill="none" stroke="#fff" stroke-width="4"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path class="logo-path" d="M25,0 L50,55 L25,110 L0,55 Z" />
+                <line class="logo-path" x1="25" y1="0" x2="25" y2="110" />
+                <line class="logo-path" x1="0" y1="55" x2="50" y2="55" />
+                <path class="logo-path" d="M75,0 L100,55 L75,110 L50,55 Z" />
+                <line class="logo-path" x1="75" y1="0" x2="75" y2="110" />
+                <line class="logo-path" x1="50" y1="55" x2="100" y2="55" />
+            </svg>
+            <span class="subpage-preloader-text">WEB DESIGN</span>
+        </div>
+    </div>
 
     <!-- ========== NAVIGATION ========== -->
     <nav id="navbar" class="scrolled">
@@ -63,7 +77,7 @@
             <span class="service-page-label">Our Services</span>
             <h1 class="service-page-title">WEB DESIGN</h1>
             <p class="service-page-tagline">Websites that don't just look good — they feel alive. Custom-coded,
-                animated, immersive digital experiences that set you apart.</p>
+                animated, immersive digital experiences built to set you apart.</p>
             <a href="index.html" class="service-back">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -102,19 +116,19 @@
                 <div class="process-step">
                     <span class="process-step-num">01</span>
                     <h3>STRATEGY & DESIGN</h3>
-                    <p>We research your brand, audience, and competitors — then design a concept that's bold,
+                    <p>We study your brand, audience, and competitive landscape — then design a concept that's bold,
                         functional, and impossible to ignore.</p>
                 </div>
                 <div class="process-step">
                     <span class="process-step-num">02</span>
                     <h3>DEVELOPMENT</h3>
-                    <p>Hand-coded HTML, CSS, and JavaScript. No bloated page builders. Every line of code is
+                    <p>Hand-coded HTML, CSS, and JavaScript. No bloated page builders — every line of code is
                         intentional, performant, and accessible.</p>
                 </div>
                 <div class="process-step">
                     <span class="process-step-num">03</span>
                     <h3>ANIMATION & UX</h3>
-                    <p>GSAP scroll animations, parallax effects, micro-interactions, and custom cursors. We make static
+                    <p>GSAP scroll animations, parallax effects, micro-interactions, and custom cursors — we make static
                         content feel cinematic.</p>
                 </div>
                 <div class="process-step">
@@ -170,11 +184,11 @@
                 </div>
 
                 <div class="service-project" data-type="video"
-                    data-media-src="videos/LuckyLandscapesWebsiteShowcase.mp4" data-title="Lucky Landscapes Website"
+                    data-media-src="videos/LuckyLandscapesWebsiteShowcase_webversion.mp4"
+                    data-title="Lucky Landscapes Website"
                     data-description="Custom website for a landscaping company featuring scroll animations, service showcases, and an interactive contact system. Built with vanilla HTML, CSS, and JavaScript.">
                     <div class="service-project-img">
-                        <img src="videos/LuckyLandscapesWebsiteShowcase_webversion.mp4" alt="Lucky Landscapes Website"
-                            loading="lazy">
+                        <img src="images/luckythumbnail.png" alt="Lucky Landscapes Website" loading="lazy">
                         <div class="service-project-view">▶ Play Showcase</div>
                     </div>
                     <div class="service-project-info">
@@ -276,232 +290,35 @@
                 <path d="M18 6L6 18M6 6l12 12" />
             </svg>
         </button>
-        <div class="lightbox-content">
-            <img class="lightbox-img" src="" alt="Portfolio full view" style="display:none;">
-            <video class="lightbox-video" controls style="display:none;"></video>
-            <div class="lightbox-iframe-wrap" style="display:none;">
-                <iframe class="lightbox-youtube" src="" frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowfullscreen></iframe>
+        <div class="lightbox-body">
+            <div class="lightbox-content">
+                <img class="lightbox-img" src="" alt="Portfolio full view" style="display:none;">
+                <video class="lightbox-video" controls style="display:none;"></video>
+                <div class="lightbox-iframe-wrap" style="display:none;">
+                    <iframe class="lightbox-youtube" src="" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen></iframe>
+                </div>
+            </div>
+            <div class="lightbox-info" style="display:none;">
+                <h3 class="lightbox-title"></h3>
+                <p class="lightbox-desc"></p>
             </div>
         </div>
-        <div class="lightbox-info" style="display:none;">
-            <h3 class="lightbox-title"></h3>
-            <p class="lightbox-desc"></p>
-        </div>
+        <button class="lightbox-prev" aria-label="Previous image" style="display:none;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 18l-6-6 6-6" />
+            </svg>
+        </button>
+        <button class="lightbox-next" aria-label="Next image" style="display:none;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18l6-6-6-6" />
+            </svg>
+        </button>
+        <span class="lightbox-counter" style="display:none;"></span>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.innerWidth < 768;
-
-            /* === LENIS SMOOTH SCROLL === */
-            let lenis;
-            if (!isMobile) {
-                lenis = new Lenis({
-                    duration: 1.2,
-                    easing(t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
-                    orientation: 'vertical',
-                    gestureOrientation: 'vertical',
-                    smoothWheel: true,
-                    wheelMultiplier: 1,
-                    touchMultiplier: 2,
-                });
-                lenis.on('scroll', ScrollTrigger.update);
-                gsap.ticker.add((time) => { lenis.raf(time * 1000); });
-                gsap.ticker.lagSmoothing(0);
-            }
-
-            /* === PAGE TRANSITION — Enter animation === */
-            const pageTransitionOverlay = document.querySelector('.page-transition-overlay');
-            if (pageTransitionOverlay) {
-                pageTransitionOverlay.style.clipPath = 'inset(0 0 0 0)';
-                gsap.to(pageTransitionOverlay, {
-                    clipPath: 'inset(0 100% 0 0)',
-                    duration: 0.7,
-                    ease: 'power4.inOut',
-                    delay: 0.1,
-                    onComplete() {
-                        pageTransitionOverlay.style.pointerEvents = 'none';
-                    }
-                });
-            }
-
-            function navigateWithTransition(url) {
-                if (!pageTransitionOverlay) { window.location.href = url; return; }
-                const tl = gsap.timeline();
-                tl.to('body', { opacity: 0.6, scale: 0.98, duration: 0.3, ease: 'power2.in' })
-                    .to(pageTransitionOverlay, {
-                        clipPath: 'inset(0 0 0 0)',
-                        duration: 0.7,
-                        ease: 'power4.inOut',
-                        onComplete() { window.location.href = url; }
-                    }, '-=0.1');
-            }
-
-            document.querySelectorAll('.service-back, .nav-logo').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    navigateWithTransition(link.getAttribute('href'));
-                });
-            });
-
-            /* === MOBILE MENU === */
-            const navToggle = document.getElementById('nav-toggle');
-            const navMenu = document.getElementById('nav-menu');
-            if (navToggle && navMenu) {
-                navToggle.addEventListener('click', () => {
-                    navToggle.classList.toggle('active');
-                    navMenu.classList.toggle('open');
-                    document.body.classList.toggle('menu-open');
-                });
-            }
-
-            /* === LIGHTBOX (with YouTube support) === */
-            const lightbox = document.getElementById('portfolio-lightbox');
-            const lightboxImg = lightbox ? lightbox.querySelector('.lightbox-img') : null;
-            const lightboxVideo = lightbox ? lightbox.querySelector('.lightbox-video') : null;
-            const lightboxIframeWrap = lightbox ? lightbox.querySelector('.lightbox-iframe-wrap') : null;
-            const lightboxYoutube = lightbox ? lightbox.querySelector('.lightbox-youtube') : null;
-            const lightboxClose = lightbox ? lightbox.querySelector('.lightbox-close') : null;
-            const lightboxBackdrop = lightbox ? lightbox.querySelector('.lightbox-backdrop') : null;
-
-            function openLightbox(type, src, title, description) {
-                if (!lightbox) return;
-                if (lightboxImg) lightboxImg.style.display = 'none';
-                if (lightboxVideo) lightboxVideo.style.display = 'none';
-                if (lightboxIframeWrap) lightboxIframeWrap.style.display = 'none';
-                if (lightboxYoutube) lightboxYoutube.src = '';
-                const lightboxTitle = lightbox.querySelector('.lightbox-title');
-                const lightboxDesc = lightbox.querySelector('.lightbox-desc');
-                if (lightboxTitle) lightboxTitle.textContent = title || '';
-                if (lightboxDesc) lightboxDesc.textContent = description || '';
-                const infoPanel = lightbox.querySelector('.lightbox-info');
-                if (infoPanel) infoPanel.style.display = (title || description) ? 'block' : 'none';
-                if (type === 'youtube') {
-                    const ytSrc = src + (src.includes('?') ? '&' : '?') + 'autoplay=1&rel=0&modestbranding=1';
-                    if (lightboxYoutube) lightboxYoutube.src = ytSrc;
-                    if (lightboxIframeWrap) lightboxIframeWrap.style.display = 'block';
-                } else if (type === 'video') {
-                    lightboxVideo.src = src;
-                    lightboxVideo.style.display = 'block';
-                    lightboxVideo.play();
-                } else {
-                    lightboxImg.src = src;
-                    lightboxImg.style.display = 'block';
-                }
-                lightbox.classList.add('active');
-                lightbox.setAttribute('aria-hidden', 'false');
-                document.body.style.overflow = 'hidden';
-            }
-
-            function closeLightbox() {
-                if (!lightbox) return;
-                lightbox.classList.remove('active');
-                lightbox.setAttribute('aria-hidden', 'true');
-                document.body.style.overflow = '';
-                if (lightboxVideo) { lightboxVideo.pause(); lightboxVideo.src = ''; }
-                if (lightboxYoutube) { lightboxYoutube.src = ''; }
-            }
-
-            document.querySelectorAll('.service-project[data-type]').forEach(item => {
-                item.addEventListener('click', () => {
-                    const type = item.getAttribute('data-type');
-                    const src = item.getAttribute('data-media-src');
-                    const title = item.getAttribute('data-title') || '';
-                    const description = item.getAttribute('data-description') || '';
-                    if (type && src) openLightbox(type, src, title, description);
-                });
-            });
-
-            if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
-            if (lightboxBackdrop) lightboxBackdrop.addEventListener('click', closeLightbox);
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && lightbox && lightbox.classList.contains('active')) closeLightbox();
-            });
-
-            /* === CONTACT FORM === */
-            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyy8ZI3rItBS8wOVDvkwslXWVh4YitCvwYvtHpgbWqNBvaFFg_kbrtRVQSwXETnInBQqA/exec';
-            const form = document.getElementById('contact-form');
-            const formStatus = document.getElementById('form-status');
-            if (form) {
-                const selectEl = document.getElementById('form-service');
-                if (selectEl) {
-                    selectEl.classList.add('has-value');
-                    selectEl.addEventListener('change', () => {
-                        if (selectEl.value) selectEl.classList.add('has-value');
-                        else selectEl.classList.remove('has-value');
-                    });
-                }
-                form.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const honeypot = form.querySelector('[name="honeypot"]');
-                    if (honeypot && honeypot.value) return;
-                    const btn = form.querySelector('.form-submit span');
-                    const submitBtn = form.querySelector('.form-submit');
-                    const originalText = btn.textContent;
-                    const formData = {
-                        name: form.querySelector('[name="name"]').value.trim(),
-                        email: form.querySelector('[name="email"]').value.trim(),
-                        service: form.querySelector('[name="service"]').value,
-                        message: form.querySelector('[name="message"]').value.trim()
-                    };
-                    if (!formData.name || !formData.email || !formData.service || !formData.message) {
-                        formStatus.textContent = 'Please fill in all fields.';
-                        formStatus.className = 'form-status error';
-                        return;
-                    }
-                    btn.textContent = 'Sending...';
-                    submitBtn.disabled = true;
-                    formStatus.textContent = 'Submitting your message...';
-                    formStatus.className = 'form-status loading';
-                    try {
-                        const submitData = new URLSearchParams();
-                        submitData.append('name', formData.name);
-                        submitData.append('email', formData.email);
-                        submitData.append('service', formData.service);
-                        submitData.append('message', formData.message);
-                        await fetch(GOOGLE_SCRIPT_URL, {
-                            method: 'POST', mode: 'no-cors',
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                            body: submitData.toString()
-                        });
-                        btn.textContent = 'Sent!';
-                        formStatus.textContent = 'Message sent successfully! We\'ll be in touch soon.';
-                        formStatus.className = 'form-status success';
-                        form.reset();
-                        if (selectEl) selectEl.classList.remove('has-value');
-                    } catch (err) {
-                        btn.textContent = 'Error';
-                        formStatus.textContent = 'Something went wrong. Please try again or email us directly.';
-                        formStatus.className = 'form-status error';
-                    }
-                    setTimeout(() => {
-                        btn.textContent = originalText;
-                        submitBtn.disabled = false;
-                        formStatus.textContent = '';
-                        formStatus.className = 'form-status';
-                    }, 4000);
-                });
-            }
-
-            /* === SMOOTH SCROLL for anchor links === */
-            document.querySelectorAll('a[href^="#"]').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const target = document.querySelector(link.getAttribute('href'));
-                    if (target) {
-                        const offset = 80;
-                        if (lenis) { lenis.scrollTo(target, { offset: -offset, duration: 1.5 }); }
-                        else {
-                            const top = target.getBoundingClientRect().top + window.scrollY - offset;
-                            window.scrollTo({ top, behavior: 'smooth' });
-                        }
-                    }
-                });
-            });
-        });
-    </script>
+    <script src="shared.js"></script>
 </body>
 
 </html>

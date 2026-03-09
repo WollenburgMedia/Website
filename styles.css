@@ -1235,7 +1235,7 @@ section {
 }
 
 /* ======================================================
-   LIGHTBOX
+   LIGHTBOX — Side-panel layout
    ====================================================== */
 .lightbox {
     position: fixed;
@@ -1286,18 +1286,29 @@ section {
     transform: rotate(90deg);
 }
 
-.lightbox-content {
+/* Lightbox body — horizontal flex container */
+.lightbox-body {
     position: relative;
     z-index: 5;
-    max-width: 90vw;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    max-width: 92vw;
+    max-height: 90vh;
+}
+
+.lightbox-content {
+    position: relative;
+    max-width: 70vw;
     max-height: 85vh;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .lightbox-img {
-    max-width: 90vw;
+    max-width: 70vw;
     max-height: 85vh;
     object-fit: contain;
     border-radius: 4px;
@@ -1307,8 +1318,8 @@ section {
 /* YouTube iframe wrapper — responsive 16:9 */
 .lightbox-iframe-wrap {
     position: relative;
-    width: 90vw;
-    max-width: 1200px;
+    width: 70vw;
+    max-width: 1100px;
     aspect-ratio: 16 / 9;
     border-radius: 4px;
     overflow: hidden;
@@ -1325,7 +1336,7 @@ section {
 }
 
 .lightbox-video {
-    max-width: 90vw;
+    max-width: 70vw;
     max-height: 85vh;
     width: 900px;
     border-radius: 4px;
@@ -1344,21 +1355,22 @@ section {
     transform: scale(1);
 }
 
-/* Lightbox info panel */
+/* Lightbox info panel — side panel */
 .lightbox-info {
-    position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
+    position: relative;
     z-index: 10;
-    text-align: center;
-    max-width: 600px;
-    padding: 1.5rem 2rem;
-    background: rgba(10, 10, 10, 0.85);
+    max-width: 320px;
+    padding: 2rem;
+    background: rgba(10, 10, 10, 0.9);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--border);
     border-radius: 8px;
+    flex-shrink: 1;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .lightbox-title {
@@ -1366,13 +1378,103 @@ section {
     font-size: 1.3rem;
     letter-spacing: 0.1em;
     color: var(--pure-white);
-    margin-bottom: 0.5rem;
 }
 
 .lightbox-desc {
     font-size: 0.9rem;
-    line-height: 1.6;
+    line-height: 1.7;
     color: var(--text);
+}
+
+/* Gallery navigation arrows */
+.lightbox-prev,
+.lightbox-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 15;
+    color: var(--pure-white);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s, border-color 0.3s, transform 0.3s;
+}
+
+.lightbox-prev {
+    left: 1.5rem;
+}
+
+.lightbox-next {
+    right: 1.5rem;
+}
+
+.lightbox-prev:hover,
+.lightbox-next:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* Gallery counter */
+.lightbox-counter {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 15;
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+    background: rgba(10, 10, 10, 0.7);
+    padding: 0.5rem 1.25rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+}
+
+/* ======================================================
+   SUBPAGE PRELOADER
+   ====================================================== */
+body.preloader-active {
+    overflow: hidden;
+}
+
+.subpage-preloader {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: var(--black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.subpage-preloader-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.subpage-preloader-logo {
+    width: clamp(50px, 10vw, 80px);
+    height: auto;
+    overflow: visible;
+}
+
+.subpage-preloader-text {
+    font-family: var(--font-heading);
+    font-size: clamp(0.8rem, 2vw, 1rem);
+    letter-spacing: 0.4em;
+    color: var(--accent);
+    opacity: 0;
+    transform: translateY(10px);
 }
 
 /* ======================================================
@@ -1809,12 +1911,6 @@ section {
 
     .service-portfolio-grid {
         grid-template-columns: 1fr;
-    }
-
-    .lightbox-info {
-        bottom: 1rem;
-        max-width: 90vw;
-        padding: 1rem;
     }
 }
 
@@ -2733,20 +2829,45 @@ section {
         height: 48px;
     }
 
+    .lightbox-body {
+        flex-direction: column;
+        max-width: 95vw;
+        gap: 1rem;
+    }
+
     .lightbox-content {
         max-width: 95vw;
-        max-height: 80vh;
+        max-height: 65vh;
     }
 
     .lightbox-img {
         max-width: 95vw;
-        max-height: 80vh;
+        max-height: 65vh;
     }
 
     .lightbox-video {
         max-width: 95vw;
         width: 95vw;
         max-height: 50vh;
+    }
+
+    .lightbox-info {
+        max-width: 95vw;
+        padding: 1rem 1.25rem;
+    }
+
+    .lightbox-prev,
+    .lightbox-next {
+        width: 40px;
+        height: 40px;
+    }
+
+    .lightbox-prev {
+        left: 0.75rem;
+    }
+
+    .lightbox-next {
+        right: 0.75rem;
     }
 
     /* --- Marquee --- */
