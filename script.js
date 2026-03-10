@@ -526,25 +526,73 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     /* ==========================================================
-       SERVICE CARD FULL-CLICK NAVIGATION — Smooth page transition
+       SERVICE CARD FULL-CLICK NAVIGATION — Instant preloader
        ========================================================== */
     const pageTransitionOverlay = document.querySelector('.page-transition-overlay');
+    const navPreloader = document.getElementById('nav-preloader');
 
+    // Map of page filenames to display names
+    const serviceNames = {
+        'videography.html': 'VIDEOGRAPHY',
+        'photography.html': 'PHOTOGRAPHY',
+        'webdesign.html': 'WEB DESIGN'
+    };
+
+    function navigateWithPreloader(url) {
+        if (!navPreloader) {
+            window.location.href = url;
+            return;
+        }
+
+        // Set the service name text
+        const textEl = navPreloader.querySelector('.nav-preloader-text');
+        const filename = url.split('/').pop();
+        if (textEl) textEl.textContent = serviceNames[filename] || '';
+
+        // Show preloader instantly
+        navPreloader.classList.add('active');
+
+        // Animate logo paths (draw on)
+        const logoPaths = navPreloader.querySelectorAll('.logo-path');
+        logoPaths.forEach(path => {
+            const len = path.getTotalLength ? path.getTotalLength() : 400;
+            path.style.strokeDasharray = len;
+            path.style.strokeDashoffset = len;
+        });
+
+        const tl = gsap.timeline({
+            onComplete() {
+                window.location.href = url;
+            }
+        });
+
+        tl.to(logoPaths, {
+            strokeDashoffset: 0,
+            duration: 0.5,
+            stagger: 0.03,
+            ease: 'power2.inOut'
+        })
+            .to(textEl, {
+                opacity: 1,
+                y: 0,
+                duration: 0.3,
+                ease: 'power2.out'
+            }, '-=0.15');
+    }
+
+    // Legacy function for non-preloader transitions (back links, etc.)
     function navigateWithTransition(url) {
         if (!pageTransitionOverlay) {
             window.location.href = url;
             return;
         }
-        // Multi-step cinematic transition
         const tl = gsap.timeline();
-        // Step 1: Fade out page content slightly
         tl.to('body', {
             opacity: 0.6,
             scale: 0.98,
             duration: 0.3,
             ease: 'power2.in'
         })
-            // Step 2: Sweep the overlay in
             .to(pageTransitionOverlay, {
                 clipPath: 'inset(0 0 0 0)',
                 duration: 0.7,
@@ -557,10 +605,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.service-card[data-href]').forEach(card => {
         card.addEventListener('click', (e) => {
-            // Don't double-navigate if they clicked the inner <a> link
             if (e.target.closest('a')) return;
             e.preventDefault();
-            navigateWithTransition(card.getAttribute('data-href'));
+            navigateWithPreloader(card.getAttribute('data-href'));
         });
     });
 

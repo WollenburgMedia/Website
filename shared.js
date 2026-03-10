@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ==========================================================
-       3. PAGE TRANSITION — Enter animation
+       3. PAGE TRANSITION — Enter animation + bfcache fix
        ========================================================== */
     const pageTransitionOverlay = document.querySelector('.page-transition-overlay');
     if (pageTransitionOverlay) {
@@ -83,6 +83,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Fix back-button navigation on Cloudflare (bfcache / persisted pages)
+    window.addEventListener('pageshow', (e) => {
+        if (e.persisted) {
+            // Page was restored from bfcache — clear any stuck overlays
+            if (pageTransitionOverlay) {
+                pageTransitionOverlay.style.clipPath = 'inset(0 100% 0 0)';
+                pageTransitionOverlay.style.pointerEvents = 'none';
+            }
+            if (subpagePreloader) {
+                subpagePreloader.style.display = 'none';
+                subpagePreloader.style.opacity = '0';
+                document.body.classList.remove('preloader-active');
+            }
+            // Reset body styles in case transition was mid-flight
+            document.body.style.opacity = '';
+            document.body.style.transform = '';
+        }
+    });
+
     function navigateWithTransition(url) {
         if (!pageTransitionOverlay) { window.location.href = url; return; }
         const tl = gsap.timeline();
@@ -97,6 +116,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Back-to-home and logo links use transition
     document.querySelectorAll('.service-back, .nav-logo').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            navigateWithTransition(link.getAttribute('href'));
+        });
+    });
+
+    // Nav links that go to index.html#section also use transitions
+    document.querySelectorAll('.nav-link[href^="index.html"]').forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             navigateWithTransition(link.getAttribute('href'));
@@ -140,7 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const lightboxNext = lightbox ? lightbox.querySelector('.lightbox-next') : null;
     const lightboxCounter = lightbox ? lightbox.querySelector('.lightbox-counter') : null;
 
-    // Gallery state
     let galleryImages = [];
     let galleryIndex = 0;
 
@@ -156,20 +182,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function openLightbox(type, src, title, description, gallery) {
         if (!lightbox) return;
 
-        // Hide all media types
         if (lightboxImg) lightboxImg.style.display = 'none';
         if (lightboxVideo) lightboxVideo.style.display = 'none';
         if (lightboxIframeWrap) lightboxIframeWrap.style.display = 'none';
         if (lightboxYoutube) lightboxYoutube.src = '';
 
-        // Reset gallery
         galleryImages = [];
         galleryIndex = 0;
         if (lightboxPrev) lightboxPrev.style.display = 'none';
         if (lightboxNext) lightboxNext.style.display = 'none';
         if (lightboxCounter) lightboxCounter.style.display = 'none';
 
-        // Update lightbox info panel
         const lightboxTitle = lightbox.querySelector('.lightbox-title');
         const lightboxDesc = lightbox.querySelector('.lightbox-desc');
         if (lightboxTitle) lightboxTitle.textContent = title || '';
@@ -181,7 +204,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const ytSrc = src + (src.includes('?') ? '&' : '?') + 'autoplay=1&rel=0&modestbranding=1';
             if (lightboxYoutube) lightboxYoutube.src = ytSrc;
             if (lightboxIframeWrap) lightboxIframeWrap.style.display = 'block';
-            // Remove gallery class
             lightbox.classList.remove('lightbox--gallery');
         } else if (type === 'video') {
             lightboxVideo.src = src;
@@ -189,7 +211,6 @@ document.addEventListener('DOMContentLoaded', () => {
             lightboxVideo.play();
             lightbox.classList.remove('lightbox--gallery');
         } else if (type === 'gallery' && gallery && gallery.length) {
-            // Gallery mode
             galleryImages = gallery;
             lightboxImg.style.display = 'block';
             showGalleryImage(0);
@@ -218,7 +239,6 @@ document.addEventListener('DOMContentLoaded', () => {
         galleryImages = [];
     }
 
-    // Gallery navigation
     if (lightboxPrev) {
         lightboxPrev.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -243,8 +263,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const src = item.getAttribute('data-media-src');
             const title = item.getAttribute('data-title') || item.querySelector('.portfolio-title')?.textContent || '';
             const description = item.getAttribute('data-description') || item.querySelector('.portfolio-excerpt')?.textContent || '';
-
-            // Check for gallery data
             const galleryAttr = item.getAttribute('data-gallery');
             if (galleryAttr) {
                 const gallery = galleryAttr.split(',').map(s => s.trim());
@@ -266,7 +284,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Close lightbox
     if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
     if (lightboxBackdrop) lightboxBackdrop.addEventListener('click', closeLightbox);
     document.addEventListener('keydown', (e) => {
@@ -281,7 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* ==========================================================
-       6. CONTACT FORM — Google Sheets Submission
+       6. CONTACT FORM — Google Sheets Submission (with timeout)
        ========================================================== */
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyy8ZI3rItBS8wOVDvkwslXWVh4YitCvwYvtHpgbWqNBvaFFg_kbrtRVQSwXETnInBQqA/exec';
     const form = document.getElementById('contact-form');
@@ -290,7 +307,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (form) {
         const selectEl = document.getElementById('form-service');
         if (selectEl) {
-            // Pre-selected values
             if (selectEl.value) selectEl.classList.add('has-value');
             selectEl.addEventListener('change', () => {
                 if (selectEl.value) selectEl.classList.add('has-value');
@@ -320,6 +336,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+                formStatus.textContent = 'Please enter a valid email address.';
+                formStatus.className = 'form-status error';
+                return;
+            }
+
             btn.textContent = 'Sending...';
             submitBtn.disabled = true;
             formStatus.textContent = 'Submitting your message...';
@@ -332,11 +354,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitData.append('service', formData.service);
                 submitData.append('message', formData.message);
 
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST', mode: 'no-cors',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: submitData.toString()
+                    body: submitData.toString(),
+                    signal: controller.signal
                 });
+
+                clearTimeout(timeoutId);
 
                 btn.textContent = 'Sent!';
                 formStatus.textContent = "Message sent successfully! We'll be in touch soon.";
@@ -344,8 +372,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 form.reset();
                 if (selectEl) selectEl.classList.remove('has-value');
             } catch (err) {
-                btn.textContent = 'Error';
-                formStatus.textContent = 'Something went wrong. Please try again or email us directly.';
+                if (err.name === 'AbortError') {
+                    btn.textContent = 'Timeout';
+                    formStatus.textContent = 'Request timed out. Please try again or email us directly.';
+                } else {
+                    btn.textContent = 'Error';
+                    formStatus.textContent = 'Something went wrong. Please try again or email us directly.';
+                }
                 formStatus.className = 'form-status error';
             }
 
@@ -379,7 +412,6 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ==========================================================
        8. SCROLL-TRIGGERED REVEALS FOR SUB-PAGES
        ========================================================== */
-    // Animate elements with data-reveal attribute
     document.querySelectorAll('[data-reveal]').forEach(el => {
         gsap.to(el, {
             opacity: 1, y: 0,
@@ -388,7 +420,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Animate process steps
     gsap.utils.toArray('.process-step').forEach((step, i) => {
         gsap.fromTo(step,
             { opacity: 0, y: 40 },
@@ -400,7 +431,6 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     });
 
-    // Animate service project cards
     gsap.utils.toArray('.service-project').forEach((project, i) => {
         gsap.fromTo(project,
             { opacity: 0, y: 50 },
@@ -412,7 +442,6 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     });
 
-    // Animate service-about sections
     gsap.utils.toArray('.service-about-text, .service-about-visual').forEach(el => {
         gsap.fromTo(el,
             { opacity: 0, y: 30 },
@@ -424,7 +453,6 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     });
 
-    // Animate section headers on sub-pages
     gsap.utils.toArray('.service-section .section-header').forEach(header => {
         gsap.fromTo(header,
             { opacity: 0, y: 30 },
@@ -436,7 +464,6 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     });
 
-    // Animate video showcase
     const videoShowcase = document.querySelector('.video-showcase-player');
     if (videoShowcase) {
         gsap.fromTo(videoShowcase,
@@ -449,7 +476,6 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     }
 
-    // Animate hero content on sub-pages
     const heroContent = document.querySelector('.service-page-hero-content');
     if (heroContent) {
         gsap.fromTo(heroContent,
@@ -457,4 +483,45 @@ document.addEventListener('DOMContentLoaded', () => {
             { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out', delay: 0.3 }
         );
     }
+
+    /* ==========================================================
+       9. SERVICE FEATURE CARDS — Staggered reveal
+       ========================================================== */
+    gsap.utils.toArray('.service-feature-card').forEach((card, i) => {
+        gsap.fromTo(card,
+            { opacity: 0, y: 40 },
+            {
+                opacity: 1, y: 0,
+                duration: 0.7, delay: i * 0.08, ease: 'power2.out',
+                scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none none' }
+            }
+        );
+    });
+
+    /* ==========================================================
+       10. SERVICE STATS — Counter animation
+       ========================================================== */
+    document.querySelectorAll('.service-stat-number[data-count]').forEach(counter => {
+        const target = parseInt(counter.getAttribute('data-count'));
+        const obj = { val: 0 };
+        gsap.to(obj, {
+            val: target, duration: 2, ease: 'power2.out',
+            scrollTrigger: { trigger: counter, start: 'top 88%', toggleActions: 'play none none none' },
+            onUpdate() { counter.textContent = Math.round(obj.val); }
+        });
+    });
+
+    /* ==========================================================
+       11. WHY CHOOSE US — Staggered reveal
+       ========================================================== */
+    gsap.utils.toArray('.service-why-item').forEach((item, i) => {
+        gsap.fromTo(item,
+            { opacity: 0, x: i % 2 === 0 ? -30 : 30 },
+            {
+                opacity: 1, x: 0,
+                duration: 0.7, delay: i * 0.1, ease: 'power2.out',
+                scrollTrigger: { trigger: item, start: 'top 88%', toggleActions: 'play none none none' }
+            }
+        );
+    });
 });
