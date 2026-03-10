@@ -402,8 +402,8 @@ document.addEventListener('DOMContentLoaded', () => {
             duration: 0.7, ease: 'power2.out', delay: 1.3
         });
 
-        // CTA
-        gsap.to('.hero-cta', {
+        // CTA Group
+        gsap.to('.hero-cta-group', {
             opacity: 1, y: 0,
             duration: 0.7, ease: 'power2.out', delay: 1.5
         });
@@ -549,35 +549,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const filename = url.split('/').pop();
         if (textEl) textEl.textContent = serviceNames[filename] || '';
 
+        // Make sure logo paths are fully visible (no draw-on animation)
+        const logoPaths = navPreloader.querySelectorAll('.logo-path');
+        logoPaths.forEach(path => {
+            path.style.strokeDasharray = 'none';
+            path.style.strokeDashoffset = '0';
+        });
+
         // Show preloader instantly
         navPreloader.classList.add('active');
 
-        // Animate logo paths (draw on)
-        const logoPaths = navPreloader.querySelectorAll('.logo-path');
-        logoPaths.forEach(path => {
-            const len = path.getTotalLength ? path.getTotalLength() : 400;
-            path.style.strokeDasharray = len;
-            path.style.strokeDashoffset = len;
-        });
-
-        const tl = gsap.timeline({
-            onComplete() {
-                window.location.href = url;
-            }
-        });
-
-        tl.to(logoPaths, {
-            strokeDashoffset: 0,
-            duration: 0.5,
-            stagger: 0.03,
-            ease: 'power2.inOut'
-        })
-            .to(textEl, {
-                opacity: 1,
-                y: 0,
-                duration: 0.3,
-                ease: 'power2.out'
-            }, '-=0.15');
+        // Navigate after a brief paint delay so the preloader is visible
+        setTimeout(() => {
+            window.location.href = url;
+        }, 100);
     }
 
     // Legacy function for non-preloader transitions (back links, etc.)

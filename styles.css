@@ -694,6 +694,37 @@ ul {
     transition: transform 0.3s var(--ease);
 }
 
+/* Hero CTA Group — dual buttons */
+.hero-cta-group {
+    display: flex;
+    gap: 1.25rem;
+    align-items: center;
+    flex-wrap: wrap;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.hero-cta-group .hero-cta {
+    opacity: 1;
+    transform: none;
+}
+
+/* Filled accent variant */
+.hero-cta--filled {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--pure-white);
+}
+
+.hero-cta--filled::before {
+    background: var(--pure-white);
+}
+
+.hero-cta--filled:hover {
+    border-color: var(--pure-white);
+    color: var(--accent);
+}
+
 .scroll-indicator {
     position: absolute;
     bottom: 2rem;
@@ -1463,18 +1494,18 @@ body.preloader-active {
 }
 
 .subpage-preloader-logo {
-    width: clamp(50px, 10vw, 80px);
+    width: clamp(60px, 10vw, 90px);
     height: auto;
     overflow: visible;
 }
 
 .subpage-preloader-text {
     font-family: var(--font-heading);
-    font-size: clamp(0.8rem, 2vw, 1rem);
+    font-size: clamp(1rem, 3vw, 1.5rem);
     letter-spacing: 0.4em;
-    color: var(--accent);
-    opacity: 0;
-    transform: translateY(10px);
+    color: var(--pure-white);
+    opacity: 1;
+    transform: none;
 }
 
 /* ======================================================
@@ -1579,8 +1610,8 @@ body.preloader-active {
     letter-spacing: 0.4em;
     text-transform: uppercase;
     color: var(--pure-white);
-    opacity: 0;
-    transform: translateY(10px);
+    opacity: 1;
+    transform: none;
 }
 
 /* ======================================================

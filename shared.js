@@ -30,40 +30,24 @@ document.addEventListener('DOMContentLoaded', () => {
        ========================================================== */
     const subpagePreloader = document.getElementById('subpage-preloader');
     if (subpagePreloader) {
-        const preloaderTl = gsap.timeline({
+        // Show logo fully drawn immediately (no animation) to match nav-preloader
+        const logoPaths = subpagePreloader.querySelectorAll('.logo-path');
+        logoPaths.forEach(path => {
+            path.style.strokeDasharray = 'none';
+            path.style.strokeDashoffset = '0';
+        });
+
+        // Hold briefly then fade out
+        gsap.to(subpagePreloader, {
+            opacity: 0,
+            duration: 0.4,
+            ease: 'power2.in',
+            delay: 0.3,
             onComplete() {
                 subpagePreloader.style.display = 'none';
                 document.body.classList.remove('preloader-active');
             }
         });
-
-        // Draw SVG logo
-        const logoPaths = subpagePreloader.querySelectorAll('.logo-path');
-        logoPaths.forEach(path => {
-            const len = path.getTotalLength ? path.getTotalLength() : 400;
-            path.style.strokeDasharray = len;
-            path.style.strokeDashoffset = len;
-        });
-
-        preloaderTl
-            .to(logoPaths, {
-                strokeDashoffset: 0,
-                duration: 0.6,
-                stagger: 0.04,
-                ease: 'power2.inOut'
-            })
-            .to('.subpage-preloader-text', {
-                opacity: 1,
-                y: 0,
-                duration: 0.3,
-                ease: 'power2.out'
-            }, '-=0.2')
-            .to(subpagePreloader, {
-                opacity: 0,
-                duration: 0.4,
-                ease: 'power2.in',
-                delay: 0.15
-            });
     }
 
     /* ==========================================================
