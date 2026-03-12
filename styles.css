@@ -2641,7 +2641,7 @@ body.preloader-active {
 
 /* Contact phone link */
 .contact-phone {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     gap: 0.5rem;
     margin-top: 0.75rem;
