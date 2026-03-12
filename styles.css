@@ -722,7 +722,8 @@ ul {
 
 .hero-cta--filled:hover {
     border-color: var(--pure-white);
-    color: var(--accent);
+    color: var(--deep);
+    background: transparent;
 }
 
 .scroll-indicator {
@@ -2636,6 +2637,47 @@ body.preloader-active {
 
 .form-submit:hover svg {
     transform: translateX(4px);
+}
+
+/* Contact phone link */
+.contact-phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.contact-phone svg {
+    flex-shrink: 0;
+}
+
+/* Footer contact info */
+.footer-contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-end;
+}
+
+.footer-phone,
+.footer-email {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: color 0.3s;
+}
+
+.footer-phone:hover,
+.footer-email:hover {
+    color: var(--accent);
+}
+
+.footer-phone svg {
+    flex-shrink: 0;
 }
 
 /* ======================================================

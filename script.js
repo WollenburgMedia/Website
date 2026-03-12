@@ -703,7 +703,7 @@ document.addEventListener('DOMContentLoaded', () => {
        16. CONTACT FORM — Google Sheets Submission
        ========================================================== */
     // Replace this URL with your deployed Google Apps Script Web App URL
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyy8ZI3rItBS8wOVDvkwslXWVh4YitCvwYvtHpgbWqNBvaFFg_kbrtRVQSwXETnInBQqA/exec';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzxcFL8szY-MMJ7HBpRn4OynxrSTiRVfjGUmbRj1__IqM8Axfd0-hJg5YammhN1AUy3/exec';
 
     const form = document.getElementById('contact-form');
     const formStatus = document.getElementById('form-status');
@@ -736,6 +736,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const formData = {
                 name: form.querySelector('[name="name"]').value.trim(),
                 email: form.querySelector('[name="email"]').value.trim(),
+                phone: form.querySelector('[name="phone"]') ? form.querySelector('[name="phone"]').value.trim() : '',
                 service: form.querySelector('[name="service"]').value,
                 message: form.querySelector('[name="message"]').value.trim()
             };
@@ -760,6 +761,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const submitData = new URLSearchParams();
                     submitData.append('name', formData.name);
                     submitData.append('email', formData.email);
+                    submitData.append('phone', formData.phone);
                     submitData.append('service', formData.service);
                     submitData.append('message', formData.message);
 
@@ -791,7 +793,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Fallback: open mailto link with form data
                 const subject = encodeURIComponent(`New inquiry from ${formData.name} — ${formData.service}`);
                 const body = encodeURIComponent(
-                    `Name: ${formData.name}\nEmail: ${formData.email}\nService: ${formData.service}\n\nMessage:\n${formData.message}`
+                    `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nService: ${formData.service}\n\nMessage:\n${formData.message}`
                 );
                 window.location.href = `mailto:wollenburgfilms@gmail.com?subject=${subject}&body=${body}`;
 
