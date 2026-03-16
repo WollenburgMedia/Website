@@ -3,6 +3,50 @@
    Lenis, Page Transitions, Lightbox + Gallery, 
    Contact Form, Mobile Menu, Scroll Animations
    ====================================================== */
+
+/* ----------------------------------------------------------
+   EARLY PRELOADER SAFETY — runs OUTSIDE DOMContentLoaded
+   Prevents preloader from EVER getting permanently stuck
+   (back-button, Cloudflare CDN, bfcache, slow JS, etc.)
+   ---------------------------------------------------------- */
+(function earlyPreloaderSafety() {
+    function forceHideAllPreloaders() {
+        var ids = ['subpage-preloader', 'preloader', 'nav-preloader'];
+        for (var i = 0; i < ids.length; i++) {
+            var el = document.getElementById(ids[i]);
+            if (el) {
+                el.style.display = 'none';
+                el.style.opacity = '0';
+                el.style.pointerEvents = 'none';
+            }
+        }
+        document.body.classList.remove('preloader-active');
+        document.body.style.opacity = '';
+        document.body.style.transform = '';
+        // Also reset page transition overlay
+        var pto = document.querySelector('.page-transition-overlay');
+        if (pto) {
+            pto.style.clipPath = 'inset(0 100% 0 0)';
+            pto.style.pointerEvents = 'none';
+        }
+    }
+
+    // bfcache: pageshow fires immediately when restored
+    window.addEventListener('pageshow', function(e) {
+        if (e.persisted) {
+            forceHideAllPreloaders();
+        }
+    });
+
+    // Hard safety net: if ANY preloader is still visible after 3s, kill it
+    setTimeout(function() {
+        var sp = document.getElementById('subpage-preloader');
+        if (sp && (sp.style.display !== 'none' && getComputedStyle(sp).display !== 'none')) {
+            forceHideAllPreloaders();
+        }
+    }, 3000);
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
     const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.innerWidth < 768;
 
