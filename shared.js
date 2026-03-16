@@ -5,47 +5,14 @@
    ====================================================== */
 
 /* ----------------------------------------------------------
-   EARLY PRELOADER SAFETY — runs OUTSIDE DOMContentLoaded
-   Prevents preloader from EVER getting permanently stuck
-   (back-button, Cloudflare CDN, bfcache, slow JS, etc.)
+   BACK-BUTTON FIX — Force full reload on bfcache restore
+   Prevents preloader from ever getting stuck.
    ---------------------------------------------------------- */
-(function earlyPreloaderSafety() {
-    function forceHideAllPreloaders() {
-        var ids = ['subpage-preloader', 'preloader', 'nav-preloader'];
-        for (var i = 0; i < ids.length; i++) {
-            var el = document.getElementById(ids[i]);
-            if (el) {
-                el.style.display = 'none';
-                el.style.opacity = '0';
-                el.style.pointerEvents = 'none';
-            }
-        }
-        document.body.classList.remove('preloader-active');
-        document.body.style.opacity = '';
-        document.body.style.transform = '';
-        // Also reset page transition overlay
-        var pto = document.querySelector('.page-transition-overlay');
-        if (pto) {
-            pto.style.clipPath = 'inset(0 100% 0 0)';
-            pto.style.pointerEvents = 'none';
-        }
+window.addEventListener('pageshow', function(e) {
+    if (e.persisted) {
+        location.reload();
     }
-
-    // bfcache: pageshow fires immediately when restored
-    window.addEventListener('pageshow', function(e) {
-        if (e.persisted) {
-            forceHideAllPreloaders();
-        }
-    });
-
-    // Hard safety net: if ANY preloader is still visible after 3s, kill it
-    setTimeout(function() {
-        var sp = document.getElementById('subpage-preloader');
-        if (sp && (sp.style.display !== 'none' && getComputedStyle(sp).display !== 'none')) {
-            forceHideAllPreloaders();
-        }
-    }, 3000);
-})();
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.innerWidth < 768;
@@ -111,55 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Fix back-button navigation (bfcache / persisted pages)
-    // Clears ALL possible stuck overlays — subpage preloader, page transition, nav-preloader, and main preloader
-    function clearAllOverlays() {
-        if (pageTransitionOverlay) {
-            pageTransitionOverlay.style.clipPath = 'inset(0 100% 0 0)';
-            pageTransitionOverlay.style.pointerEvents = 'none';
-        }
-        if (subpagePreloader) {
-            subpagePreloader.style.display = 'none';
-            subpagePreloader.style.opacity = '0';
-            document.body.classList.remove('preloader-active');
-        }
-        // Reset nav-preloader (used on index.html for service card clicks)
-        const navPreloader = document.getElementById('nav-preloader');
-        if (navPreloader) {
-            navPreloader.classList.remove('active');
-            navPreloader.style.opacity = '0';
-            navPreloader.style.pointerEvents = 'none';
-        }
-        // Reset main preloader (used on index.html)
-        const mainPreloader = document.getElementById('preloader');
-        if (mainPreloader) {
-            mainPreloader.style.display = 'none';
-            mainPreloader.style.opacity = '0';
-        }
-        // Reset body styles in case transition was mid-flight
-        document.body.style.opacity = '';
-        document.body.style.transform = '';
-        document.body.classList.remove('preloader-active');
-    }
-
-    window.addEventListener('pageshow', (e) => {
-        if (e.persisted) {
-            clearAllOverlays();
-        }
-    });
-
-    // Secondary fallback: visibilitychange fires on some browsers when bfcache doesn't trigger pageshow
-    document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') {
-            // Small delay to let normal page loads complete first
-            setTimeout(() => {
-                // Only clear if page is fully loaded (avoids interfering with initial load)
-                if (document.readyState === 'complete') {
-                    clearAllOverlays();
-                }
-            }, 500);
-        }
-    });
+    // bfcache overlay cleanup is now handled by the early pageshow → reload above.
+    // No additional handlers needed here.
 
     function navigateWithTransition(url) {
         if (!pageTransitionOverlay) { window.location.href = url; return; }

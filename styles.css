@@ -104,53 +104,39 @@ ul {
     height: 100%;
     z-index: var(--z-grain);
     pointer-events: none;
-    opacity: 0.03;
+    opacity: 0.035;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
     background-repeat: repeat;
-    /* Animation removed — caused scroll jank and white-flash artifacts */
+    background-size: 256px 256px;
+    animation: grainDrift 0.4s steps(6) infinite;
+    will-change: background-position;
 }
 
-@keyframes grainShift {
+@keyframes grainDrift {
 
     0%,
     100% {
-        transform: translate(0, 0);
+        background-position: 0 0;
     }
 
-    10% {
-        transform: translate(-2%, -3%);
+    16% {
+        background-position: -48px 32px;
     }
 
-    20% {
-        transform: translate(3%, 1%);
-    }
-
-    30% {
-        transform: translate(-1%, 4%);
-    }
-
-    40% {
-        transform: translate(4%, -2%);
+    33% {
+        background-position: 64px -16px;
     }
 
     50% {
-        transform: translate(-3%, 3%);
+        background-position: -32px -48px;
     }
 
-    60% {
-        transform: translate(2%, -4%);
+    66% {
+        background-position: 48px 64px;
     }
 
-    70% {
-        transform: translate(-4%, 1%);
-    }
-
-    80% {
-        transform: translate(1%, -1%);
-    }
-
-    90% {
-        transform: translate(3%, 2%);
+    83% {
+        background-position: -64px 16px;
     }
 }
 
