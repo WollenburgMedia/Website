@@ -67,22 +67,53 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Fix back-button navigation on Cloudflare (bfcache / persisted pages)
+    // Fix back-button navigation (bfcache / persisted pages)
+    // Clears ALL possible stuck overlays — subpage preloader, page transition, nav-preloader, and main preloader
+    function clearAllOverlays() {
+        if (pageTransitionOverlay) {
+            pageTransitionOverlay.style.clipPath = 'inset(0 100% 0 0)';
+            pageTransitionOverlay.style.pointerEvents = 'none';
+        }
+        if (subpagePreloader) {
+            subpagePreloader.style.display = 'none';
+            subpagePreloader.style.opacity = '0';
+            document.body.classList.remove('preloader-active');
+        }
+        // Reset nav-preloader (used on index.html for service card clicks)
+        const navPreloader = document.getElementById('nav-preloader');
+        if (navPreloader) {
+            navPreloader.classList.remove('active');
+            navPreloader.style.opacity = '0';
+            navPreloader.style.pointerEvents = 'none';
+        }
+        // Reset main preloader (used on index.html)
+        const mainPreloader = document.getElementById('preloader');
+        if (mainPreloader) {
+            mainPreloader.style.display = 'none';
+            mainPreloader.style.opacity = '0';
+        }
+        // Reset body styles in case transition was mid-flight
+        document.body.style.opacity = '';
+        document.body.style.transform = '';
+        document.body.classList.remove('preloader-active');
+    }
+
     window.addEventListener('pageshow', (e) => {
         if (e.persisted) {
-            // Page was restored from bfcache — clear any stuck overlays
-            if (pageTransitionOverlay) {
-                pageTransitionOverlay.style.clipPath = 'inset(0 100% 0 0)';
-                pageTransitionOverlay.style.pointerEvents = 'none';
-            }
-            if (subpagePreloader) {
-                subpagePreloader.style.display = 'none';
-                subpagePreloader.style.opacity = '0';
-                document.body.classList.remove('preloader-active');
-            }
-            // Reset body styles in case transition was mid-flight
-            document.body.style.opacity = '';
-            document.body.style.transform = '';
+            clearAllOverlays();
+        }
+    });
+
+    // Secondary fallback: visibilitychange fires on some browsers when bfcache doesn't trigger pageshow
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            // Small delay to let normal page loads complete first
+            setTimeout(() => {
+                // Only clear if page is fully loaded (avoids interfering with initial load)
+                if (document.readyState === 'complete') {
+                    clearAllOverlays();
+                }
+            }, 500);
         }
     });
 
@@ -257,6 +288,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Prevent project links from triggering lightbox
+    document.querySelectorAll('.service-project-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    });
+
     // Click on service-page project items
     document.querySelectorAll('.service-project[data-type]').forEach(item => {
         item.addEventListener('click', () => {
@@ -264,7 +302,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const src = item.getAttribute('data-media-src');
             const title = item.getAttribute('data-title') || '';
             const description = item.getAttribute('data-description') || '';
-            if (type && src) openLightbox(type, src, title, description);
+            const galleryAttr = item.getAttribute('data-gallery');
+            if (galleryAttr) {
+                const gallery = galleryAttr.split(',').map(s => s.trim());
+                openLightbox('gallery', src, title, description, gallery);
+            } else if (type && src) {
+                openLightbox(type, src, title, description);
+            }
         });
     });
 
