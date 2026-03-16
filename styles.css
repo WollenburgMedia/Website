@@ -1495,7 +1495,7 @@ body.preloader-active {
     transform: none;
     text-align: center;
     /* Compensate for letter-spacing pushing text off-center */
-    padding-right: 0.4em;
+    padding-left: 0.4em;
 }
 
 /* ======================================================
@@ -1585,7 +1585,7 @@ body.preloader-active {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1.25rem;
 }
 
 .nav-preloader-logo {
@@ -1602,6 +1602,9 @@ body.preloader-active {
     color: var(--pure-white);
     opacity: 1;
     transform: none;
+    text-align: center;
+    /* Compensate for letter-spacing pushing text off-center */
+    padding-left: 0.4em;
 }
 
 /* ======================================================
