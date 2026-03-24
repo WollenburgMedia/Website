@@ -876,13 +876,56 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ==========================================================
-       20. PORTFOLIO LIGHTBOX — Gallery + Side Panel
+       20. YOUTUBE IFRAME API — Adaptive Quality
+       ========================================================== */
+    let ytApiReady = false;
+    let ytPlayer = null;
+
+    // Load YouTube IFrame Player API
+    (function loadYTApi() {
+        if (window.YT && window.YT.Player) { ytApiReady = true; return; }
+        const tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        const firstScript = document.getElementsByTagName('script')[0];
+        firstScript.parentNode.insertBefore(tag, firstScript);
+    })();
+
+    // Global callback for YT API ready
+    const prevOnYTReady = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = function () {
+        ytApiReady = true;
+        if (prevOnYTReady) prevOnYTReady();
+    };
+
+    // Detect connection speed and return best quality
+    function getPreferredYTQuality() {
+        const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (conn) {
+            const dl = conn.downlink || 10; // Mbps
+            const et = conn.effectiveType || '4g';
+            if (et === '4g' && dl >= 10) return 'hd2160'; // 4K
+            if (et === '4g' && dl >= 5) return 'hd1080';
+            if (et === '4g') return 'hd720';
+            if (et === '3g') return 'large'; // 480p
+            return 'medium'; // 360p for 2g/slow
+        }
+        // Can't detect connection — default to 1080p (safe high quality)
+        return 'hd1080';
+    }
+
+    // Extract video ID from YouTube embed URL
+    function extractYTVideoId(url) {
+        const match = url.match(/\/embed\/([a-zA-Z0-9_-]+)/);
+        return match ? match[1] : null;
+    }
+
+    /* ==========================================================
+       21. PORTFOLIO LIGHTBOX — Gallery + Side Panel
        ========================================================== */
     const lightbox = document.getElementById('portfolio-lightbox');
     const lightboxImg = lightbox ? lightbox.querySelector('.lightbox-img') : null;
     const lightboxVideo = lightbox ? lightbox.querySelector('.lightbox-video') : null;
     const lightboxIframeWrap = lightbox ? lightbox.querySelector('.lightbox-iframe-wrap') : null;
-    const lightboxYoutube = lightbox ? lightbox.querySelector('.lightbox-youtube') : null;
     const lightboxClose = lightbox ? lightbox.querySelector('.lightbox-close') : null;
     const lightboxBackdrop = lightbox ? lightbox.querySelector('.lightbox-backdrop') : null;
     const lightboxPrev = lightbox ? lightbox.querySelector('.lightbox-prev') : null;
@@ -909,7 +952,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (lightboxImg) lightboxImg.style.display = 'none';
         if (lightboxVideo) lightboxVideo.style.display = 'none';
         if (lightboxIframeWrap) lightboxIframeWrap.style.display = 'none';
-        if (lightboxYoutube) lightboxYoutube.src = '';
+        // Destroy any existing YT player
+        if (ytPlayer) { try { ytPlayer.destroy(); } catch (e) {} ytPlayer = null; }
+        // Ensure the placeholder div exists for next use
+        if (lightboxIframeWrap && !lightboxIframeWrap.querySelector('#lightbox-yt-player')) {
+            const ph = document.createElement('div');
+            ph.id = 'lightbox-yt-player';
+            ph.className = 'lightbox-youtube';
+            lightboxIframeWrap.appendChild(ph);
+        }
 
         // Reset gallery
         galleryImages = [];
@@ -927,9 +978,50 @@ document.addEventListener('DOMContentLoaded', () => {
         if (infoPanel) infoPanel.style.display = (title || description) ? 'flex' : 'none';
 
         if (type === 'youtube') {
-            const ytSrc = src + (src.includes('?') ? '&' : '?') + 'autoplay=1&rel=0&modestbranding=1';
-            if (lightboxYoutube) lightboxYoutube.src = ytSrc;
             if (lightboxIframeWrap) lightboxIframeWrap.style.display = 'block';
+            const videoId = extractYTVideoId(src);
+            if (ytApiReady && videoId) {
+                ytPlayer = new YT.Player('lightbox-yt-player', {
+                    videoId: videoId,
+                    playerVars: {
+                        autoplay: 1,
+                        rel: 0,
+                        modestbranding: 1,
+                        playsinline: 1
+                    },
+                    events: {
+                        onReady: function (e) {
+                            var q = getPreferredYTQuality();
+                            e.target.setPlaybackQuality(q);
+                        },
+                        onStateChange: function (e) {
+                            if (e.data === YT.PlayerState.PLAYING) {
+                                var q = getPreferredYTQuality();
+                                e.target.setPlaybackQuality(q);
+                            }
+                        }
+                    }
+                });
+            } else {
+                // Fallback: inject an iframe directly with vq hint
+                var vq = getPreferredYTQuality();
+                var fallbackSrc = src + (src.includes('?') ? '&' : '?') + 'autoplay=1&rel=0&modestbranding=1&vq=' + vq;
+                var ph = lightboxIframeWrap.querySelector('#lightbox-yt-player');
+                if (ph) {
+                    var iframe = document.createElement('iframe');
+                    iframe.className = 'lightbox-youtube';
+                    iframe.src = fallbackSrc;
+                    iframe.frameBorder = '0';
+                    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+                    iframe.allowFullscreen = true;
+                    iframe.style.width = '100%';
+                    iframe.style.height = '100%';
+                    iframe.style.position = 'absolute';
+                    iframe.style.top = '0';
+                    iframe.style.left = '0';
+                    ph.replaceWith(iframe);
+                }
+            }
         } else if (type === 'video') {
             lightboxVideo.src = src;
             lightboxVideo.style.display = 'block';
@@ -959,7 +1051,20 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.overflow = '';
 
         if (lightboxVideo) { lightboxVideo.pause(); lightboxVideo.src = ''; }
-        if (lightboxYoutube) { lightboxYoutube.src = ''; }
+        // Destroy YT player and recreate placeholder div
+        if (ytPlayer) { try { ytPlayer.destroy(); } catch (e) {} ytPlayer = null; }
+        if (lightboxIframeWrap) {
+            // Remove any leftover iframe (from fallback) or YT-generated iframe
+            var oldIframe = lightboxIframeWrap.querySelector('iframe');
+            if (oldIframe) oldIframe.remove();
+            // Recreate placeholder div if missing
+            if (!lightboxIframeWrap.querySelector('#lightbox-yt-player')) {
+                var ph = document.createElement('div');
+                ph.id = 'lightbox-yt-player';
+                ph.className = 'lightbox-youtube';
+                lightboxIframeWrap.appendChild(ph);
+            }
+        }
         galleryImages = [];
     }
 

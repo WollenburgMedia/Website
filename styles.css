@@ -2786,6 +2786,38 @@ body.preloader-active {
     color: var(--muted);
 }
 
+/* Footer social icons */
+.footer-social {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.footer-social a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    transition: color 0.3s, border-color 0.3s, background 0.3s, transform 0.3s;
+}
+
+.footer-social a:hover {
+    color: var(--pure-white);
+    border-color: var(--accent);
+    background: rgba(196, 30, 58, 0.15);
+    transform: translateY(-3px);
+}
+
+.footer-social svg {
+    width: 18px;
+    height: 18px;
+}
+
 /* ======================================================
    BACK TO TOP
    ====================================================== */
